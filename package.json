@@ -1,0 +1,38 @@
+{
+    "name": "be-node-ts-template",
+    "description": "Template project to future backend apps using node and typescript.",
+    "version": "1.0.0",
+    "engines": {
+        "node": ">=20.18.0"
+    },
+    "main": "index.js",
+    "scripts": {
+        "dev": "node -r ts-node/register -r tsconfig-paths/register --watch src/main.ts",
+        "format": "eslint --fix && prettier '**/*.ts' --write",
+        "test": "vitest",
+        "build": "tsc",
+        "start": "node dist/src/main.js"
+    },
+    "keywords": [
+        "backend",
+        "node",
+        "typescript",
+        "template"
+    ],
+    "author": "Luiz Henrique Dominico",
+    "license": "MIT",
+    "devDependencies": {
+        "@eslint/js": "^9.13.0",
+        "@types/node": "^22.7.8",
+        "eslint": "^9.13.0",
+        "eslint-config-prettier": "^9.1.0",
+        "globals": "^15.11.0",
+        "prettier": "^3.3.3",
+        "ts-node": "^10.9.2",
+        "tsconfig-paths": "^4.2.0",
+        "typescript": "^5.6.3",
+        "typescript-eslint": "^8.11.0",
+        "vite-tsconfig-paths": "^5.0.1",
+        "vitest": "^2.1.3"
+    }
+}
