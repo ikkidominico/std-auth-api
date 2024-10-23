@@ -1,4 +1,11 @@
+import { JwtOptions } from "./JwtOptions";
+import { JwtPayload } from "./JwtPayload";
+
 export default interface JwtService {
-    sign(payload: object, key: string): Promise<string>;
+    sign(
+        payload: JwtPayload,
+        key: string,
+        options: JwtOptions,
+    ): Promise<string>;
     verify(token: string, key: string): Promise<object>;
 }

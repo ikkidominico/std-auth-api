@@ -1,5 +1,6 @@
 import HomeController from "./controllers/HomeController";
 import LoginController from "./controllers/LoginController";
+import RefreshTokenController from "./controllers/RefreshTokenController";
 import SignUpController from "./controllers/SignUpController";
 import { HttpMethods } from "./enums/HttpMethodsEnum";
 import { ExpressJwtMiddleware } from "./express/ExpressJwtMiddleware";
@@ -13,16 +14,6 @@ export default class Router {
     }
 
     async route() {
-        this.httpServer.on(
-            HttpMethods.GET,
-            "/home",
-            () => {
-                const homeController: HomeController = new HomeController();
-                return homeController.get();
-            },
-            [ExpressJwtMiddleware],
-        );
-
         this.httpServer.on(HttpMethods.POST, "/signup", (request) => {
             const { body } = request as {
                 body: {
@@ -46,5 +37,29 @@ export default class Router {
             const loginController: LoginController = new LoginController();
             return loginController.postLocalLogin(email, password);
         });
+
+        this.httpServer.on(
+            HttpMethods.GET,
+            "/refresh/:refreshToken",
+            (request) => {
+                const { params } = request as {
+                    params: { refreshToken: string };
+                };
+                const refreshToken = params.refreshToken;
+                const refreshTokenController: RefreshTokenController =
+                    new RefreshTokenController();
+                return refreshTokenController.getAccessToken(refreshToken);
+            },
+        );
+
+        this.httpServer.on(
+            HttpMethods.GET,
+            "/home",
+            () => {
+                const homeController: HomeController = new HomeController();
+                return homeController.get();
+            },
+            [ExpressJwtMiddleware],
+        );
     }
 }

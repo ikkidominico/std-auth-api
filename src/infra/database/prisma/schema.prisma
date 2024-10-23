@@ -14,10 +14,13 @@ datasource db {
 }
 
 model User {
-  id      String    @id
-  email   String    @unique
-  login   Login[]
-  profile Profile[]
+  id           String        @id @default(uuid())
+  email        String        @unique
+  login        Login[]
+  profile      Profile[]
+  RefreshToken RefreshToken?
+
+  @@map("users")
 }
 
 model Login {
@@ -27,6 +30,7 @@ model Login {
   userId   String  @id
 
   @@unique([userId, method])
+  @@map("logins")
 }
 
 model Profile {
@@ -34,4 +38,15 @@ model Profile {
   birth  DateTime
   user   User     @relation(fields: [userId], references: [id])
   userId String   @id
+
+  @@map("profiles")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  expiresIn DateTime
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
+
+  @@map("refresh_tokens")
 }
