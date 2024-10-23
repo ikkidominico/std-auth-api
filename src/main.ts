@@ -1,5 +1,12 @@
+import ExpressAdapter from "./infra/http/express/ExpressAdapter";
+import HttpServer from "./infra/http/HttpServer";
+import Router from "./infra/http/Router";
+
 function main() {
-    console.log("hello world!");
+    const httpServer: HttpServer = new ExpressAdapter();
+    const router: Router = new Router(httpServer);
+    router.route();
+    httpServer.listen(3000);
 }
 
 main();
