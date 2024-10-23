@@ -3,7 +3,7 @@ import RefreshTokenRepository from "@/src/domain/repositories/RefreshTokenReposi
 import PrismaRefreshTokenRepository from "../../repositories/PrismaRefreshTokenRepository";
 import UserRepository from "@/src/domain/repositories/UserRepository";
 import PrismaUserRepository from "../../repositories/PrismaUserRepository";
-import JwtService from "@/src/application/services/JwtService";
+import { JwtService } from "@/src/application/services/JwtService";
 import JsonWebTokenService from "../../services/JsonWebTokenService";
 import CreateRefreshTokenUseCase from "@/src/application/usecases/CreateRefreshTokenUseCase";
 

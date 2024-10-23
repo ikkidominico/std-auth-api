@@ -10,6 +10,7 @@ export default class CreateRefreshTokenUseCase {
     async execute(userId: string, expiresIn: Date) {
         const refreshToken =
             await this.refreshTokenRepository.getRefreshTokenByUserId(userId);
+
         if (refreshToken) {
             if (refreshToken.expiresIn < new Date(Date.now())) {
                 await this.refreshTokenRepository.deleteRefreshToken(
@@ -18,6 +19,7 @@ export default class CreateRefreshTokenUseCase {
             }
             return refreshToken.id;
         }
+
         return await this.refreshTokenRepository.createRefreshToken(
             userId,
             expiresIn,

@@ -1,6 +1,6 @@
 import LoginRepository from "@/src/domain/repositories/LoginRepository";
 import CryptService from "../services/CryptService";
-import JwtService from "../services/JwtService";
+import { JwtService } from "../services/JwtService";
 import CreateRefreshTokenUseCase from "./CreateRefreshTokenUseCase";
 
 type Input = {
@@ -35,14 +35,18 @@ export default class LocalLoginUseCase {
         const login = await this.loginRepository.getLocalLoginByEmail(
             input.email,
         );
+
         if (!login) throw new Error("Login information not found.");
+
         const result = await this.cryptService.verify(
             input.password,
             login.password as string,
         );
+
         if (!result) {
             throw new Error("Invalid email and/or password");
         }
+
         return {
             access_token: await this.jwtService.sign(
                 { sub: login.user.id, email: login.user.email },

@@ -21,10 +21,6 @@ export default class SignUpController {
         this.cryptService,
     );
     async postLocalSignUp(email: string, password: string) {
-        try {
-            return this.localSignUpUseCase.execute(email, password);
-        } catch (error: unknown) {
-            return error;
-        }
+        return this.localSignUpUseCase.execute(email, password);
     }
 }

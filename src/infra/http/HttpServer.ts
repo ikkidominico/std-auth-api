@@ -7,5 +7,6 @@ export default interface HttpServer {
         callback: (request: unknown) => unknown,
         middlewares?: ((...args: never[]) => unknown)[],
     ): void;
+
     listen(port: number): void;
 }
