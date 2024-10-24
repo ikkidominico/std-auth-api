@@ -1,6 +1,6 @@
 import { HttpMethods } from "./enums/HttpMethodsEnum";
 
-export default interface HttpServer {
+export interface HttpServer {
     on(
         method: HttpMethods,
         url: string,

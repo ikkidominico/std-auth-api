@@ -1,11 +1,12 @@
-import CryptService from "@/src/application/services/CryptService";
-import CreateUserUseCase from "@/src/application/usecases/CreateUserUseCase";
-import LocalSignUpUseCase from "@/src/application/usecases/LocalSignupUseCase";
-import LoginRepository from "@/src/domain/repositories/LoginRepository";
-import UserRepository from "@/src/domain/repositories/UserRepository";
-import InMemoryLoginRepository from "@/src/infra/repositories/InMemoryLoginRepository";
-import InMemoryUserRepository from "@/src/infra/repositories/InMemoryUserRepository";
-import BcryptService from "@/src/infra/services/BcryptService";
+import { CryptService } from "@/src/application/services/CryptService";
+import { IdService } from "@/src/application/services/IdService";
+import { LocalSignUpUseCase } from "@/src/application/usecases/LocalSignUpUseCase";
+import { LoginRepository } from "@/src/domain/repositories/LoginRepository";
+import { UserRepository } from "@/src/domain/repositories/UserRepository";
+import { InMemoryLoginRepository } from "@/src/infra/repositories/InMemoryLoginRepository";
+import { InMemoryUserRepository } from "@/src/infra/repositories/InMemoryUserRepository";
+import { BcryptService } from "@/src/infra/services/BcryptService";
+import { UuidService } from "@/src/infra/services/UuidService";
 import { describe } from "node:test";
 import { test, expect } from "vitest";
 
@@ -13,14 +14,12 @@ describe("User Signup", () => {
     test("Should signup an user", async () => {
         const userRepository: UserRepository = new InMemoryUserRepository();
         const loginRepository: LoginRepository = new InMemoryLoginRepository();
-        const createUserUseCase: CreateUserUseCase = new CreateUserUseCase(
-            userRepository,
-        );
+        const idService: IdService = new UuidService();
         const cryptService: CryptService = new BcryptService();
         const localSignUpUseCase: LocalSignUpUseCase = new LocalSignUpUseCase(
             userRepository,
             loginRepository,
-            createUserUseCase,
+            idService,
             cryptService,
         );
         const email = "johndoe@email.com";
@@ -32,14 +31,12 @@ describe("User Signup", () => {
     test("Should throw an error when user email already exists", async () => {
         const userRepository: UserRepository = new InMemoryUserRepository();
         const loginRepository: LoginRepository = new InMemoryLoginRepository();
-        const createUserUseCase: CreateUserUseCase = new CreateUserUseCase(
-            userRepository,
-        );
+        const idService: IdService = new UuidService();
         const cryptService: CryptService = new BcryptService();
         const localSignUpUseCase: LocalSignUpUseCase = new LocalSignUpUseCase(
             userRepository,
             loginRepository,
-            createUserUseCase,
+            idService,
             cryptService,
         );
         const email = "johndoe@email.com";

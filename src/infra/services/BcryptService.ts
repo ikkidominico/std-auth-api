@@ -1,7 +1,7 @@
-import CryptService from "@/src/application/services/CryptService";
+import { CryptService } from "@/src/application/services/CryptService";
 import bcrypt from "bcrypt";
 
-export default class BcryptService implements CryptService {
+export class BcryptService implements CryptService {
     async hash(text: string): Promise<string> {
         return bcrypt.hash(text, 12);
     }

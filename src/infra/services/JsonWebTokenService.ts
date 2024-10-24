@@ -1,7 +1,7 @@
 import { JwtService, JwtOptions } from "@/src/application/services/JwtService";
 import jwt from "jsonwebtoken";
 
-export default class JsonWebTokenService implements JwtService {
+export class JsonWebTokenService implements JwtService {
     async sign(
         payload: object,
         key: string,

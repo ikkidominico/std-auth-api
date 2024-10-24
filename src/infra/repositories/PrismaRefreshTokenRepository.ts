@@ -1,15 +1,18 @@
-import RefreshTokenRepository from "@/src/domain/repositories/RefreshTokenRepository";
-import prisma from "../database/prisma/prisma";
-import RefreshToken from "@/src/domain/entities/RefreshToken";
+import { RefreshTokenRepository } from "@/src/domain/repositories/RefreshTokenRepository";
+import { prisma } from "../database/prisma/prisma";
+import { RefreshToken } from "@/src/domain/entities/RefreshToken";
 
-export default class PrismaRefreshTokenRepository
-    implements RefreshTokenRepository
-{
-    async createRefreshToken(userId: string, expiresIn: Date): Promise<string> {
+export class PrismaRefreshTokenRepository implements RefreshTokenRepository {
+    async createRefreshToken(
+        id: string,
+        expiresIn: Date,
+        userId: string,
+    ): Promise<string> {
         const result = await prisma.refreshToken.create({
             data: {
-                userId,
+                id,
                 expiresIn,
+                userId,
             },
         });
         return result.id;
@@ -25,14 +28,10 @@ export default class PrismaRefreshTokenRepository
             },
         });
         if (!result) return null;
-        return new RefreshToken(
-            {
-                id: result.user.id,
-                email: result.user.email,
-            },
-            result.id,
-            result.expiresIn,
-        );
+        return new RefreshToken(result.id, result.expiresIn, {
+            id: result.user.id,
+            email: result.user.email,
+        });
     }
 
     async getRefreshTokenByUserId(
@@ -47,14 +46,33 @@ export default class PrismaRefreshTokenRepository
             },
         });
         if (!result) return null;
-        return new RefreshToken(
-            {
-                id: result.user.id,
-                email: result.user.email,
+        return new RefreshToken(result.id, result.expiresIn, {
+            id: result.user.id,
+            email: result.user.email,
+        });
+    }
+
+    async updateRefreshTokenByUserId(
+        id: string,
+        userId: string,
+        expiresIn?: Date,
+    ): Promise<RefreshToken | null> {
+        const result = await prisma.refreshToken.update({
+            data: {
+                id,
+                expiresIn,
             },
-            result.id,
-            result.expiresIn,
-        );
+            where: {
+                userId,
+            },
+            include: {
+                user: true,
+            },
+        });
+        return new RefreshToken(result.id, result.expiresIn, {
+            id: result.user.id,
+            email: result.user.email,
+        });
     }
 
     async deleteRefreshToken(id: string): Promise<void> {

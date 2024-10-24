@@ -1,13 +1,13 @@
-import User from "./User";
+import { User } from "./User";
 
-export default class Login {
-    user: User;
+export class Login {
     method: string;
     password?: string;
+    user: User;
 
-    constructor(user: User, method: string, password?: string) {
-        this.user = user;
+    constructor(method: string, user: User, password?: string) {
         this.method = method;
+        this.user = user;
         this.password = password;
     }
 }

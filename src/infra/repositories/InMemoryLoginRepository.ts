@@ -1,8 +1,8 @@
 import { LoginMethods } from "@/src/application/enums/LoginMethods";
-import Login from "@/src/domain/entities/Login";
-import LoginRepository from "@/src/domain/repositories/LoginRepository";
+import { Login } from "@/src/domain/entities/Login";
+import { LoginRepository } from "@/src/domain/repositories/LoginRepository";
 
-export default class InMemoryLoginRepository implements LoginRepository {
+export class InMemoryLoginRepository implements LoginRepository {
     logins: Login[];
 
     constructor() {

@@ -1,6 +1,6 @@
-import ExpressAdapter from "./infra/http/express/ExpressAdapter";
-import HttpServer from "./infra/http/HttpServer";
-import Router from "./infra/http/Router";
+import { ExpressAdapter } from "./infra/http/express/ExpressAdapter";
+import { HttpServer } from "./infra/http/HttpServer";
+import { Router } from "./infra/http/Router";
 
 function main() {
     const httpServer: HttpServer = new ExpressAdapter();

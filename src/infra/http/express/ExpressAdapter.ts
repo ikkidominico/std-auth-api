@@ -1,8 +1,8 @@
 import express, { Application, NextFunction, Request, Response } from "express";
-import HttpServer from "../HttpServer";
+import { HttpServer } from "../HttpServer";
 import { HttpMethods } from "../enums/HttpMethodsEnum";
 
-export default class ExpressAdapter implements HttpServer {
+export class ExpressAdapter implements HttpServer {
     server: Application;
 
     constructor() {

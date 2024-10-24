@@ -1,12 +1,12 @@
-import HomeController from "./controllers/HomeController";
-import LoginController from "./controllers/LoginController";
-import RefreshTokenController from "./controllers/RefreshTokenController";
-import SignUpController from "./controllers/SignUpController";
+import { HomeController } from "./controllers/HomeController";
+import { LoginController } from "./controllers/LoginController";
+import { RefreshAccessTokenController } from "./controllers/RefreshAccessTokenController";
+import { SignUpController } from "./controllers/SignUpController";
 import { HttpMethods } from "./enums/HttpMethodsEnum";
 import { ExpressJwtMiddleware } from "./express/ExpressJwtMiddleware";
-import HttpServer from "./HttpServer";
+import { HttpServer } from "./HttpServer";
 
-export default class Router {
+export class Router {
     httpServer: HttpServer;
 
     constructor(httpServer: HttpServer) {
@@ -23,7 +23,7 @@ export default class Router {
             };
             const { email, password } = body;
             const signUpController: SignUpController = new SignUpController();
-            return signUpController.postLocalSignUp(email, password);
+            return signUpController.handle(email, password);
         });
 
         this.httpServer.on(HttpMethods.POST, "/login", (request) => {
@@ -35,7 +35,7 @@ export default class Router {
             };
             const { email, password } = body;
             const loginController: LoginController = new LoginController();
-            return loginController.postLocalLogin(email, password);
+            return loginController.handle(email, password);
         });
 
         this.httpServer.on(
@@ -46,9 +46,9 @@ export default class Router {
                     params: { refreshToken: string };
                 };
                 const refreshToken = params.refreshToken;
-                const refreshTokenController: RefreshTokenController =
-                    new RefreshTokenController();
-                return refreshTokenController.getAccessToken(refreshToken);
+                const refreshTokenController: RefreshAccessTokenController =
+                    new RefreshAccessTokenController();
+                return refreshTokenController.handle(refreshToken);
             },
         );
 
@@ -57,7 +57,7 @@ export default class Router {
             "/home",
             () => {
                 const homeController: HomeController = new HomeController();
-                return homeController.get();
+                return homeController.handle();
             },
             [ExpressJwtMiddleware],
         );

@@ -1,13 +1,13 @@
-import User from "./User";
+import { User } from "./User";
 
-export default class RefreshToken {
-    user: User;
+export class RefreshToken {
     id: string;
     expiresIn: Date;
+    user: User;
 
-    constructor(user: User, id: string, expiresIn: Date) {
-        this.user = user;
+    constructor(id: string, expiresIn: Date, user: User) {
         this.id = id;
         this.expiresIn = expiresIn;
+        this.user = user;
     }
 }

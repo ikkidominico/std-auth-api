@@ -1,11 +1,9 @@
-import IdService from "../services/IdService";
-
-export default class User {
+export class User {
     id: string;
     email: string;
 
-    constructor(email: string, id?: string) {
-        this.id = id || IdService.uuid();
+    constructor(id: string, email: string) {
+        this.id = id;
         this.email = email;
     }
 }

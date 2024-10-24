@@ -1,10 +1,10 @@
 import { LoginMethods } from "@/src/application/enums/LoginMethods";
-import Login from "@/src/domain/entities/Login";
-import LoginRepository from "@/src/domain/repositories/LoginRepository";
-import prisma from "../database/prisma/prisma";
-import User from "@/src/domain/entities/User";
+import { Login } from "@/src/domain/entities/Login";
+import { LoginRepository } from "@/src/domain/repositories/LoginRepository";
+import { prisma } from "../database/prisma/prisma";
+import { User } from "@/src/domain/entities/User";
 
-export default class PrismaLoginRepository implements LoginRepository {
+export class PrismaLoginRepository implements LoginRepository {
     async createLogin(login: Login): Promise<void> {
         await prisma.login.create({
             data: {
@@ -35,11 +35,11 @@ export default class PrismaLoginRepository implements LoginRepository {
             },
         });
         if (!result) return null;
-        const user: User = new User(result.email, result.id);
+        const user: User = new User(result.id, result.email);
         const first = result.login[0];
         const login: Login = new Login(
-            user,
             first.method,
+            user,
             first.password as string | undefined,
         );
         return login;

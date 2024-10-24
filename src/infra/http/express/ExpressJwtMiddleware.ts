@@ -1,6 +1,6 @@
 import { JwtService } from "@/src/application/services/JwtService";
 import { NextFunction, Request, Response } from "express";
-import JsonWebTokenService from "../../services/JsonWebTokenService";
+import { JsonWebTokenService } from "../../services/JsonWebTokenService";
 
 export async function ExpressJwtMiddleware(
     request: Request,

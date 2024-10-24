@@ -1,8 +1,8 @@
-import User from "@/src/domain/entities/User";
-import UserRepository from "@/src/domain/repositories/UserRepository";
-import prisma from "../database/prisma/prisma";
+import { User } from "@/src/domain/entities/User";
+import { UserRepository } from "@/src/domain/repositories/UserRepository";
+import { prisma } from "../database/prisma/prisma";
 
-export default class PrismaUserRepository implements UserRepository {
+export class PrismaUserRepository implements UserRepository {
     async createUser(user: User): Promise<void> {
         await prisma.user.create({
             data: {
@@ -19,7 +19,7 @@ export default class PrismaUserRepository implements UserRepository {
             },
         });
         if (!result) return null;
-        const user: User = new User(result.email, result.id);
+        const user: User = new User(result.id, result.email);
         return user;
     }
 
@@ -30,13 +30,13 @@ export default class PrismaUserRepository implements UserRepository {
             },
         });
         if (!result) return null;
-        const user: User = new User(result.email, result.id);
+        const user: User = new User(result.id, result.email);
         return user;
     }
 
     async getUsers(): Promise<User[]> {
         const result = await prisma.user.findMany();
-        const users = result.map((user) => new User(user.email, user.id));
+        const users = result.map((user) => new User(user.id, user.email));
         return users;
     }
 }

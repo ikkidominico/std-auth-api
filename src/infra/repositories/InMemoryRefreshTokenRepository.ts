@@ -1,22 +1,22 @@
-import RefreshToken from "@/src/domain/entities/RefreshToken";
-import RefreshTokenRepository from "@/src/domain/repositories/RefreshTokenRepository";
+import { RefreshToken } from "@/src/domain/entities/RefreshToken";
+import { RefreshTokenRepository } from "@/src/domain/repositories/RefreshTokenRepository";
 
-export default class InMemoryRefreshTokenRepository
-    implements RefreshTokenRepository
-{
+export class InMemoryRefreshTokenRepository implements RefreshTokenRepository {
     refreshTokens: RefreshToken[];
 
     constructor() {
         this.refreshTokens = [];
     }
 
-    async createRefreshToken(userId: string, expiresIn: Date): Promise<string> {
-        const id = Math.floor(Math.random() * 100000).toString();
-        const refreshToken = new RefreshToken(
-            { id: userId, email: "" },
-            id,
-            expiresIn,
-        );
+    async createRefreshToken(
+        id: string,
+        expiresIn: Date,
+        userId: string,
+    ): Promise<string> {
+        const refreshToken = new RefreshToken(id, expiresIn, {
+            id: userId,
+            email: "",
+        });
         this.refreshTokens.push(refreshToken);
         return id;
     }
@@ -37,6 +37,21 @@ export default class InMemoryRefreshTokenRepository
         );
         if (!refreshToken) return null;
         return refreshToken;
+    }
+
+    async updateRefreshTokenByUserId(
+        id: string,
+        userId: string,
+        expiresIn?: Date,
+    ): Promise<RefreshToken | null> {
+        const index = this.refreshTokens.findIndex(
+            (refreshToken) => (refreshToken.id = id),
+        );
+        this.refreshTokens[index].user.id = userId;
+        this.refreshTokens[index].expiresIn =
+            expiresIn ||
+            new Date(new Date().setHours(new Date().getHours() + 2));
+        return this.refreshTokens[index];
     }
 
     async deleteRefreshToken(id: string): Promise<void> {
