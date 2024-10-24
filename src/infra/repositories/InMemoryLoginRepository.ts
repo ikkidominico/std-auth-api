@@ -19,7 +19,7 @@ export class InMemoryLoginRepository implements LoginRepository {
                 login.method === LoginMethods.LOCAL &&
                 login.user.email === email,
         );
-        if (!login) throw new Error();
+        if (!login) throw new Error("Login not found.");
         return login;
     }
 
@@ -31,7 +31,7 @@ export class InMemoryLoginRepository implements LoginRepository {
                 login.method === LoginMethods.LOCAL &&
                 login.recoveryToken === recoveryToken,
         );
-        if (!login) throw new Error();
+        if (!login) throw new Error("Login not found.");
         return login;
     }
 

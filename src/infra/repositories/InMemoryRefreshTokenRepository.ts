@@ -45,9 +45,10 @@ export class InMemoryRefreshTokenRepository implements RefreshTokenRepository {
         expiresIn?: Date,
     ): Promise<RefreshToken | null> {
         const index = this.refreshTokens.findIndex(
-            (refreshToken) => (refreshToken.id = id),
+            (refreshToken) => refreshToken.user.id === userId,
         );
-        this.refreshTokens[index].user.id = userId;
+        console.log(index);
+        this.refreshTokens[index].id = id;
         this.refreshTokens[index].expiresIn =
             expiresIn ||
             new Date(new Date().setHours(new Date().getHours() + 2));

@@ -1,0 +1,14 @@
+import { GetProfileUseCase } from "@/src/application/usecases/profile/GetProfileUseCase";
+import { ProfileRepository } from "@/src/domain/repositories/ProfileRepository";
+import { PrismaProfileRepository } from "../../repositories/PrismaProfileRepository";
+
+export class GetProfileController {
+    profileRepository: ProfileRepository = new PrismaProfileRepository();
+    getProfileUseCase: GetProfileUseCase = new GetProfileUseCase(
+        this.profileRepository,
+    );
+
+    async handle(userId: string) {
+        return this.getProfileUseCase.execute(userId);
+    }
+}

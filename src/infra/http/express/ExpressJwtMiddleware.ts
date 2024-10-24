@@ -18,12 +18,12 @@ export async function ExpressJwtMiddleware(
             throw new Error("Access token not found.");
         }
 
-        const result: { email: string } = (await jwtService.verify(
+        const result: { sub: string; email: string } = (await jwtService.verify(
             token,
             "std-auth-api-key",
-        )) as { email: string };
+        )) as { sub: string; email: string };
 
-        request.user = { email: result.email };
+        request.user = { id: result.sub, email: result.email };
 
         next();
     } catch (error: unknown) {

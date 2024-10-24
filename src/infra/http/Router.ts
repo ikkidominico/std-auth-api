@@ -1,3 +1,5 @@
+import { CreateProfileController } from "./controllers/CreateProfileController";
+import { GetProfileController } from "./controllers/GetProfileController";
 import { HomeController } from "./controllers/HomeController";
 import { LoginController } from "./controllers/LoginController";
 import { PasswordRecoveryController } from "./controllers/PasswordRecoveryController";
@@ -93,6 +95,51 @@ export class Router {
             () => {
                 const homeController: HomeController = new HomeController();
                 return homeController.handle();
+            },
+            [ExpressJwtMiddleware],
+        );
+
+        this.httpServer.on(
+            HttpMethods.POST,
+            "/profiles",
+            (request) => {
+                const { user } = request as {
+                    user: {
+                        id: string;
+                        email: string;
+                    };
+                };
+                const { body } = request as {
+                    body: {
+                        name: string;
+                        birth: string;
+                    };
+                };
+                const birthDate = new Date(body.birth);
+                const createProfileController: CreateProfileController =
+                    new CreateProfileController();
+                return createProfileController.handle(
+                    user.id,
+                    body.name,
+                    birthDate,
+                );
+            },
+            [ExpressJwtMiddleware],
+        );
+
+        this.httpServer.on(
+            HttpMethods.GET,
+            "/profiles",
+            (request) => {
+                const { user } = request as {
+                    user: {
+                        id: string;
+                        email: string;
+                    };
+                };
+                const getProfileController: GetProfileController =
+                    new GetProfileController();
+                return getProfileController.handle(user.id);
             },
             [ExpressJwtMiddleware],
         );
