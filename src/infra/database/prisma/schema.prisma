@@ -24,10 +24,11 @@ model User {
 }
 
 model Login {
-  method   String
-  password String?
-  user     User    @relation(fields: [userId], references: [id])
-  userId   String  @id
+  method        String
+  password      String?
+  recoveryToken String?
+  user          User    @relation(fields: [userId], references: [id])
+  userId        String  @id
 
   @@unique([userId, method])
   @@map("logins")

@@ -22,4 +22,38 @@ export class InMemoryLoginRepository implements LoginRepository {
         if (!login) throw new Error();
         return login;
     }
+
+    async getLocalLoginByRecoveryToken(
+        recoveryToken: string,
+    ): Promise<Login | null> {
+        const login = this.logins.find(
+            (login) =>
+                login.method === LoginMethods.LOCAL &&
+                login.recoveryToken === recoveryToken,
+        );
+        if (!login) throw new Error();
+        return login;
+    }
+
+    async updateRecoveryTokenByUserId(
+        userId: string,
+        recoveryToken: string,
+    ): Promise<Login | null> {
+        const index = this.logins.findIndex(
+            (login) => (login.user.id = userId),
+        );
+        this.logins[index].recoveryToken = recoveryToken;
+        return this.logins[index];
+    }
+
+    async updatePasswordByUserId(
+        userId: string,
+        password: string,
+    ): Promise<Login | null> {
+        const index = this.logins.findIndex(
+            (login) => (login.user.id = userId),
+        );
+        this.logins[index].password = password;
+        return this.logins[index];
+    }
 }

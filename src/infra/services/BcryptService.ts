@@ -1,5 +1,6 @@
-import { CryptService } from "@/src/application/services/CryptService";
+import crypto from "node:crypto";
 import bcrypt from "bcrypt";
+import { CryptService } from "@/src/application/services/CryptService";
 
 export class BcryptService implements CryptService {
     async hash(text: string): Promise<string> {
@@ -8,5 +9,9 @@ export class BcryptService implements CryptService {
 
     async verify(text: string, hash: string): Promise<boolean> {
         return bcrypt.compare(text, hash);
+    }
+
+    async randomToken(): Promise<string> {
+        return crypto.randomBytes(48).toString("hex");
     }
 }

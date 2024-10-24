@@ -1,6 +1,8 @@
 import { HomeController } from "./controllers/HomeController";
 import { LoginController } from "./controllers/LoginController";
+import { PasswordRecoveryController } from "./controllers/PasswordRecoveryController";
 import { RefreshAccessTokenController } from "./controllers/RefreshAccessTokenController";
+import { ResetPasswordController } from "./controllers/ResetPasswordController";
 import { SignUpController } from "./controllers/SignUpController";
 import { HttpMethods } from "./enums/HttpMethodsEnum";
 import { ExpressJwtMiddleware } from "./express/ExpressJwtMiddleware";
@@ -49,6 +51,39 @@ export class Router {
                 const refreshTokenController: RefreshAccessTokenController =
                     new RefreshAccessTokenController();
                 return refreshTokenController.handle(refreshToken);
+            },
+        );
+
+        this.httpServer.on(HttpMethods.POST, "/forgot", (request) => {
+            const { body } = request as {
+                body: {
+                    email: string;
+                };
+            };
+            const { email } = body;
+            const passwordRecoveryController: PasswordRecoveryController =
+                new PasswordRecoveryController();
+            return passwordRecoveryController.handle(email);
+        });
+
+        this.httpServer.on(
+            HttpMethods.POST,
+            "/reset/:recoveryToken",
+            (request) => {
+                const { params } = request as {
+                    params: { recoveryToken: string };
+                };
+                const { body } = request as {
+                    body: {
+                        password: string;
+                    };
+                };
+                const resetPasswordController: ResetPasswordController =
+                    new ResetPasswordController();
+                return resetPasswordController.handle(
+                    params.recoveryToken,
+                    body.password,
+                );
             },
         );
 
