@@ -13,6 +13,10 @@ export class InMemoryLoginRepository implements LoginRepository {
         this.logins.push(login);
     }
 
+    async getLoginsByUserId(userId: string): Promise<Login[]> {
+        return this.logins.filter((login) => login.user.id === userId);
+    }
+
     async getLocalLoginByEmail(email: string): Promise<Login | null> {
         const login = this.logins.find(
             (login) =>

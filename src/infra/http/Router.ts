@@ -1,3 +1,4 @@
+import { GetLoginsController } from "./controllers/GetLoginsController";
 import { GetProfileController } from "./controllers/GetProfileController";
 import { HomeController } from "./controllers/HomeController";
 import { LoginController } from "./controllers/LoginController";
@@ -143,6 +144,23 @@ export class Router {
                     body.name,
                     parsedBirth,
                 );
+            },
+            [ExpressJwtMiddleware],
+        );
+
+        this.httpServer.on(
+            HttpMethods.GET,
+            "/logins",
+            (request) => {
+                const { user } = request as {
+                    user: {
+                        id: string;
+                        email: string;
+                    };
+                };
+                const getLoginsController: GetLoginsController =
+                    new GetLoginsController();
+                return getLoginsController.handle(user.id);
             },
             [ExpressJwtMiddleware],
         );

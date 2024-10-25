@@ -65,6 +65,28 @@ export class PrismaLoginRepository implements LoginRepository {
         return login;
     }
 
+    async getLoginsByUserId(userId: string): Promise<Login[]> {
+        const result = await prisma.login.findMany({
+            where: {
+                userId,
+            },
+            include: {
+                user: true,
+            },
+        });
+
+        const logins = result.map(
+            (login) =>
+                new Login(
+                    login.method,
+                    login.user,
+                    login.password as string | undefined,
+                ),
+        );
+
+        return logins;
+    }
+
     async updateRecoveryTokenByUserId(
         userId: string,
         recoveryToken: string,
