@@ -26,7 +26,11 @@ export class PrismaProfileRepository implements ProfileRepository {
         });
         if (!result) return null;
         const user = new User(result.user.id, result.user.email);
-        return new Profile(result.name, result.birth, user);
+        return new Profile(
+            user,
+            result.name as string | undefined,
+            result.birth as Date | undefined,
+        );
     }
 
     async updateProfileByUserId(
@@ -47,7 +51,11 @@ export class PrismaProfileRepository implements ProfileRepository {
             },
         });
         const user = new User(result.user.id, result.user.email);
-        return new Profile(result.name, result.birth, user);
+        return new Profile(
+            user,
+            result.name as string | undefined,
+            result.birth as Date | undefined,
+        );
     }
 
     async deleteProfileByUserId(userId: string): Promise<void> {

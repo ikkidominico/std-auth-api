@@ -35,10 +35,10 @@ model Login {
 }
 
 model Profile {
-  name   String
-  birth  DateTime
-  user   User     @relation(fields: [userId], references: [id])
-  userId String   @id
+  name   String?
+  birth  DateTime?
+  user   User      @relation(fields: [userId], references: [id])
+  userId String    @id
 
   @@map("profiles")
 }

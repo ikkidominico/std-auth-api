@@ -1,0 +1,8 @@
+PUT http://localhost:3000/profiles HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwYjdkYjQwOS0xYjQ4LTQ1MDYtOGU5Ny1jY2RlNDBmYjc3OTAiLCJlbWFpbCI6Imx1aXpoZW5yaXF1ZWRvbWluaWNvQGdtYWlsLmNvbSIsImlhdCI6MTcyOTg0NTYyNywiZXhwIjoxNzI5ODQ3NDI3fQ.Lfq9-AvqhPsve5iMTopobTEaGiSQw06IvBKFTolwncI
+Content-Type: application/json
+
+{
+    "name": "Luiz Henrique Dominico",
+    "birth": "1999-09-20"
+}

@@ -1,4 +1,3 @@
-import { CreateProfileController } from "./controllers/CreateProfileController";
 import { GetProfileController } from "./controllers/GetProfileController";
 import { HomeController } from "./controllers/HomeController";
 import { LoginController } from "./controllers/LoginController";
@@ -6,6 +5,7 @@ import { PasswordRecoveryController } from "./controllers/PasswordRecoveryContro
 import { RefreshAccessTokenController } from "./controllers/RefreshAccessTokenController";
 import { ResetPasswordController } from "./controllers/ResetPasswordController";
 import { SignUpController } from "./controllers/SignUpController";
+import { UpdateProfileController } from "./controllers/UpdateProfileController";
 import { HttpMethods } from "./enums/HttpMethodsEnum";
 import { ExpressJwtMiddleware } from "./express/ExpressJwtMiddleware";
 import { HttpServer } from "./HttpServer";
@@ -100,34 +100,6 @@ export class Router {
         );
 
         this.httpServer.on(
-            HttpMethods.POST,
-            "/profiles",
-            (request) => {
-                const { user } = request as {
-                    user: {
-                        id: string;
-                        email: string;
-                    };
-                };
-                const { body } = request as {
-                    body: {
-                        name: string;
-                        birth: string;
-                    };
-                };
-                const birthDate = new Date(body.birth);
-                const createProfileController: CreateProfileController =
-                    new CreateProfileController();
-                return createProfileController.handle(
-                    user.id,
-                    body.name,
-                    birthDate,
-                );
-            },
-            [ExpressJwtMiddleware],
-        );
-
-        this.httpServer.on(
             HttpMethods.GET,
             "/profiles",
             (request) => {
@@ -140,6 +112,37 @@ export class Router {
                 const getProfileController: GetProfileController =
                     new GetProfileController();
                 return getProfileController.handle(user.id);
+            },
+            [ExpressJwtMiddleware],
+        );
+
+        this.httpServer.on(
+            HttpMethods.PUT,
+            "/profiles",
+            (request) => {
+                const { user } = request as {
+                    user: {
+                        id: string;
+                        email: string;
+                    };
+                };
+                const { body } = request as {
+                    body: {
+                        name?: string;
+                        birth?: string;
+                    };
+                };
+                const updateProfileController: UpdateProfileController =
+                    new UpdateProfileController();
+                let parsedBirth = undefined;
+                if (body.birth) {
+                    parsedBirth = new Date(body.birth);
+                }
+                return updateProfileController.handle(
+                    user.id,
+                    body.name,
+                    parsedBirth,
+                );
             },
             [ExpressJwtMiddleware],
         );

@@ -1,4 +1,4 @@
-import { GetProfileUseCase } from "@/src/application/usecases/profile/GetProfileUseCase";
+import { GetProfileUseCase } from "@/src/application/usecases/GetProfileUseCase";
 import { ProfileRepository } from "@/src/domain/repositories/ProfileRepository";
 import { PrismaProfileRepository } from "../../repositories/PrismaProfileRepository";
 
