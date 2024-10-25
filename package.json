@@ -1,23 +1,24 @@
 {
     "name": "std-auth-api",
-    "description": "Standard Authentication API.",
+    "description": "Standard Authentication API",
     "version": "1.0.0",
     "engines": {
         "node": ">=20.18.0"
     },
     "main": "index.js",
     "scripts": {
-        "dev": "node -r ts-node/register -r tsconfig-paths/register --watch src/main.ts",
+        "dev": "node --env-file .env -r ts-node/register -r tsconfig-paths/register --watch src/main.ts",
         "format": "eslint --fix && prettier '**/*.ts' --write",
         "test": "vitest",
-        "build": "tsc",
-        "start": "node dist/src/main.js"
+        "build": "tsc && tsc-alias",
+        "start": "node --env-file .env dist/src/main.js"
     },
     "keywords": [
         "backend",
         "node",
         "typescript",
-        "template"
+        "authentication",
+        "api"
     ],
     "author": "Luiz Henrique Dominico",
     "license": "MIT",
@@ -35,6 +36,7 @@
         "prettier": "^3.3.3",
         "prisma": "^5.21.1",
         "ts-node": "^10.9.2",
+        "tsc-alias": "^1.8.10",
         "tsconfig-paths": "^4.2.0",
         "typescript": "^5.6.3",
         "typescript-eslint": "^8.11.0",

@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://std-auth-user:std-auth-password@localhost:5432/std-auth-db?schema=public"
+  url      = env("DATABASE_URL")
 }
 
 model User {

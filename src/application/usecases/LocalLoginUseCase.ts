@@ -77,7 +77,7 @@ export class LocalLoginUseCase {
 
         const access_token = await this.jwtService.sign(
             { sub: login.user.id, email: login.user.email },
-            "std-auth-api-key",
+            process.env.JWT_KEY as string,
             { expiresIn: "30m" },
         );
 

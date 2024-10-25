@@ -6,7 +6,7 @@ function main() {
     const httpServer: HttpServer = new ExpressAdapter();
     const router: Router = new Router(httpServer);
     router.route();
-    httpServer.listen(3000);
+    httpServer.listen(Number(process.env.PORT) || 3000);
 }
 
 main();

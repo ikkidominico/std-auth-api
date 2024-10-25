@@ -40,7 +40,7 @@ export class RefreshAccessTokenUseCase {
 
         const access_token = await this.jwtService.sign(
             { sub: user.id, email: user.email },
-            "std-auth-api-key",
+            process.env.JWT_KEY as string,
             { expiresIn: "30m" },
         );
 
