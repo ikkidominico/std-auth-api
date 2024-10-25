@@ -40,7 +40,8 @@ export class RefreshAccessTokenUseCase {
 
         const access_token = await this.jwtService.sign(
             { sub: user.id, email: user.email },
-            process.env.JWT_KEY as string,
+            (process.env.JWT_KEY as string) ||
+                (process.env.TEST_JWT_KEY as string),
             { expiresIn: "30m" },
         );
 

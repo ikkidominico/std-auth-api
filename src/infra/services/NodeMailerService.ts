@@ -7,8 +7,10 @@ export class NodeMailerService implements MailService {
 
     constructor() {
         this.transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST,
-            port: Number(process.env.SMTP_PORT),
+            host: process.env.SMTP_HOST || process.env.TEST_SMTP_HOST,
+            port:
+                Number(process.env.SMTP_PORT) ||
+                Number(process.env.TEST_SMTP_PORT),
             secure: false,
         });
     }
