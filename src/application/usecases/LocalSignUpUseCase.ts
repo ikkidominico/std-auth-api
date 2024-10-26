@@ -39,6 +39,7 @@ export class LocalSignUpUseCase {
         const profile = new Profile(user);
 
         const login = new Login(
+            this.idService.getUuid(),
             LoginMethods.LOCAL,
             user,
             await this.cryptService.hash(password),

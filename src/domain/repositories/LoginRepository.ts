@@ -7,6 +7,8 @@ export interface LoginRepository {
 
     getLocalLoginByEmail(email: string): Promise<Login | null>;
 
+    getGoogleLoginByEmail(email: string): Promise<Login | null>;
+
     getLocalLoginByRecoveryToken(recoveryToken: string): Promise<Login | null>;
 
     updateRecoveryTokenByUserId(

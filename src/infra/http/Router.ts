@@ -1,5 +1,6 @@
 import { GetLoginsController } from "./controllers/GetLoginsController";
 import { GetProfileController } from "./controllers/GetProfileController";
+import { GoogleOAuthController } from "./controllers/GoogleOAuthController";
 import { HomeController } from "./controllers/HomeController";
 import { LoginController } from "./controllers/LoginController";
 import { PasswordRecoveryController } from "./controllers/PasswordRecoveryController";
@@ -41,6 +42,17 @@ export class Router {
             const { email, password } = body;
             const loginController: LoginController = new LoginController();
             return loginController.handle(email, password);
+        });
+
+        this.httpServer.on(HttpMethods.GET, "/auth/google", (request) => {
+            const { query } = request as {
+                query: {
+                    code: string;
+                };
+            };
+            const googleOAuthController: GoogleOAuthController =
+                new GoogleOAuthController();
+            return googleOAuthController.handle(query.code);
         });
 
         this.httpServer.on(

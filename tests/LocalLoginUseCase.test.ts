@@ -32,6 +32,7 @@ test("Should login an user", async () => {
     const password = "password";
     const user = new User(idService.getUuid(), email);
     const login = new Login(
+        idService.getUuid(),
         LoginMethods.LOCAL,
         user,
         await cryptService.hash(password),

@@ -27,6 +27,16 @@ export class InMemoryLoginRepository implements LoginRepository {
         return login;
     }
 
+    async getGoogleLoginByEmail(email: string): Promise<Login | null> {
+        const login = this.logins.find(
+            (login) =>
+                login.method === LoginMethods.GOOGLE &&
+                login.user.email === email,
+        );
+        if (!login) throw new Error("Login not found.");
+        return login;
+    }
+
     async getLocalLoginByRecoveryToken(
         recoveryToken: string,
     ): Promise<Login | null> {

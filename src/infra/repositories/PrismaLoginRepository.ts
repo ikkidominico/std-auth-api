@@ -8,6 +8,7 @@ export class PrismaLoginRepository implements LoginRepository {
     async createLogin(login: Login): Promise<void> {
         await prisma.login.create({
             data: {
+                id: login.id,
                 method: login.method,
                 password: login.password,
                 userId: login.user.id,
@@ -33,6 +34,33 @@ export class PrismaLoginRepository implements LoginRepository {
         const user: User = new User(result.user.id, result.user.email);
 
         const login: Login = new Login(
+            result.id,
+            result.method,
+            user,
+            result.password as string | undefined,
+        );
+        return login;
+    }
+
+    async getGoogleLoginByEmail(email: string): Promise<Login | null> {
+        const result = await prisma.login.findFirst({
+            where: {
+                user: {
+                    email,
+                },
+                method: LoginMethods.GOOGLE,
+            },
+            include: {
+                user: true,
+            },
+        });
+
+        if (!result) return null;
+
+        const user: User = new User(result.user.id, result.user.email);
+
+        const login: Login = new Login(
+            result.id,
             result.method,
             user,
             result.password as string | undefined,
@@ -58,6 +86,7 @@ export class PrismaLoginRepository implements LoginRepository {
         const user: User = new User(result.user.id, result.user.email);
 
         const login: Login = new Login(
+            result.id,
             result.method,
             user,
             result.password as string | undefined,
@@ -78,6 +107,7 @@ export class PrismaLoginRepository implements LoginRepository {
         const logins = result.map(
             (login) =>
                 new Login(
+                    login.id,
                     login.method,
                     login.user,
                     login.password as string | undefined,
@@ -96,13 +126,14 @@ export class PrismaLoginRepository implements LoginRepository {
                 recoveryToken,
             },
             where: {
-                userId,
+                userId_method: { userId, method: LoginMethods.LOCAL },
             },
             include: {
                 user: true,
             },
         });
         return new Login(
+            result.id,
             result.method,
             result.user,
             result.password as string | undefined,
@@ -120,13 +151,14 @@ export class PrismaLoginRepository implements LoginRepository {
                 recoveryToken: undefined,
             },
             where: {
-                userId,
+                userId_method: { userId, method: LoginMethods.LOCAL },
             },
             include: {
                 user: true,
             },
         });
         return new Login(
+            result.id,
             result.method,
             result.user,
             result.password as string | undefined,
