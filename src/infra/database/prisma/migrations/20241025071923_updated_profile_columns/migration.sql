@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "profiles" ALTER COLUMN "name" DROP NOT NULL,
-ALTER COLUMN "birth" DROP NOT NULL;

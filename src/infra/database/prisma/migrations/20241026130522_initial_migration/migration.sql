@@ -1,26 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `Login` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Profile` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropForeignKey
-ALTER TABLE "Login" DROP CONSTRAINT "Login_userId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Profile" DROP CONSTRAINT "Profile_userId_fkey";
-
--- DropTable
-DROP TABLE "Login";
-
--- DropTable
-DROP TABLE "Profile";
-
--- DropTable
-DROP TABLE "User";
-
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
@@ -31,17 +8,19 @@ CREATE TABLE "users" (
 
 -- CreateTable
 CREATE TABLE "logins" (
+    "id" TEXT NOT NULL,
     "method" TEXT NOT NULL,
     "password" TEXT,
+    "recoveryToken" TEXT,
     "userId" TEXT NOT NULL,
 
-    CONSTRAINT "logins_pkey" PRIMARY KEY ("userId")
+    CONSTRAINT "logins_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "profiles" (
-    "name" TEXT NOT NULL,
-    "birth" TIMESTAMP(3) NOT NULL,
+    "name" TEXT,
+    "birth" TIMESTAMP(3),
     "userId" TEXT NOT NULL,
 
     CONSTRAINT "profiles_pkey" PRIMARY KEY ("userId")
