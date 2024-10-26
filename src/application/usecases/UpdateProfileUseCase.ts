@@ -1,17 +1,30 @@
 import { ProfileRepository } from "@/src/domain/repositories/ProfileRepository";
 
 export class UpdateProfileUseCase {
-    profileRepository: ProfileRepository;
+    private readonly profileRepository: ProfileRepository;
 
-    constructor(profileRepository: ProfileRepository) {
+    constructor({
+        profileRepository,
+    }: {
+        profileRepository: ProfileRepository;
+    }) {
         this.profileRepository = profileRepository;
     }
 
-    async execute(userId: string, name?: string, birth?: Date) {
-        const profile = await this.profileRepository.updateProfileByUserId(
+    async execute({
+        name,
+        birth,
+        userId,
+    }: {
+        name?: string;
+        birth?: Date;
+        userId: string;
+    }) {
+        const profile = await this.profileRepository.updateProfileByUserId({
+            name,
+            birth,
             userId,
-            { name, birth },
-        );
+        });
         if (!profile) throw new Error("Profile not updated.");
         return profile;
     }

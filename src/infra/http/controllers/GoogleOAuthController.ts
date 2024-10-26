@@ -18,6 +18,8 @@ import { UuidService } from "../../services/UuidService";
 import { BcryptService } from "../../services/BcryptService";
 import { JsonWebTokenService } from "../../services/JsonWebTokenService";
 import { GoogleLoginUseCase } from "@/src/application/usecases/GoogleLoginUseCase";
+import { CreateTokensUseCase } from "@/src/application/usecases/CreateTokensUseCase";
+import { CreateRefreshTokenUseCase } from "@/src/application/usecases/CreateRefreshTokenUseCase";
 
 export class GoogleOAuthController {
     userRepository: UserRepository = new PrismaUserRepository();
@@ -29,18 +31,25 @@ export class GoogleOAuthController {
     cryptService: CryptService = new BcryptService();
     jwtService: JwtService = new JsonWebTokenService();
     googleOAuthService: GoogleOAuthService = new GoogleOAuthService();
+    createRefreshTokenUseCase: CreateRefreshTokenUseCase =
+        new CreateRefreshTokenUseCase({
+            refreshTokenRepository: this.refreshTokenRepository,
+            idService: this.idService,
+        });
+    createTokensUseCase: CreateTokensUseCase = new CreateTokensUseCase({
+        jwtService: this.jwtService,
+        createRefreshTokenUseCase: this.createRefreshTokenUseCase,
+    });
 
-    googleLoginUseCase: GoogleLoginUseCase = new GoogleLoginUseCase(
-        this.userRepository,
-        this.loginRepository,
-        this.profileRepository,
-        this.refreshTokenRepository,
-        this.idService,
-        this.cryptService,
-        this.jwtService,
-    );
+    googleLoginUseCase: GoogleLoginUseCase = new GoogleLoginUseCase({
+        userRepository: this.userRepository,
+        loginRepository: this.loginRepository,
+        profileRepository: this.profileRepository,
+        idService: this.idService,
+        createTokensUseCase: this.createTokensUseCase,
+    });
 
-    async handle(code: string) {
+    async handle({ code }: { code: string }) {
         const googleTokensResult: GoogleTokensResult =
             await this.googleOAuthService.getGoogleOAuthTokens(code);
         const googleUserResult: GoogleUserResult =
@@ -50,7 +59,7 @@ export class GoogleOAuthController {
             );
         return this.googleLoginUseCase.execute({
             email: googleUserResult.email,
-            verified_email: googleUserResult.verified_email,
+            verifiedEmail: googleUserResult.verified_email,
             name: googleUserResult.name,
         });
     }

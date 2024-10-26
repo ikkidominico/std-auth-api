@@ -1,21 +1,25 @@
 import { RefreshToken } from "../entities/RefreshToken";
 
 export interface RefreshTokenRepository {
-    createRefreshToken(
-        id: string,
-        expiresIn: Date,
-        userId: string,
-    ): Promise<string>;
+    createRefreshToken({
+        id,
+        expiresIn,
+        userId,
+    }: {
+        id: string;
+        expiresIn: Date;
+        userId: string;
+    }): Promise<string>;
 
-    getRefreshTokenById(id: string): Promise<RefreshToken | null>;
+    getRefreshTokenById({
+        id,
+    }: {
+        id: string;
+    }): Promise<RefreshToken | undefined>;
 
-    getRefreshTokenByUserId(userId: string): Promise<RefreshToken | null>;
+    getRefreshTokenByUserId(userId: {
+        userId: string;
+    }): Promise<RefreshToken | undefined>;
 
-    updateRefreshTokenByUserId(
-        id: string,
-        userId: string,
-        expiresIn?: Date,
-    ): Promise<RefreshToken | null>;
-
-    deleteRefreshToken(id: string): Promise<void>;
+    deleteRefreshToken({ id }: { id: string }): Promise<void>;
 }

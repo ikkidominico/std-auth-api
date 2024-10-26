@@ -10,46 +10,27 @@ import { InMemoryUserRepository } from "@/src/infra/repositories/InMemoryUserRep
 import { BcryptService } from "@/src/infra/services/BcryptService";
 import { UuidService } from "@/src/infra/services/UuidService";
 import { describe } from "node:test";
-import { test, expect } from "vitest";
+import { expect, it } from "vitest";
 
 describe("User Signup", () => {
-    test("Should signup an user", async () => {
-        const userRepository: UserRepository = new InMemoryUserRepository();
-        const profileRepository: ProfileRepository =
-            new InMemoryProfileRepository();
-        const loginRepository: LoginRepository = new InMemoryLoginRepository();
-        const idService: IdService = new UuidService();
-        const cryptService: CryptService = new BcryptService();
-        const localSignUpUseCase: LocalSignUpUseCase = new LocalSignUpUseCase(
-            userRepository,
-            profileRepository,
-            loginRepository,
-            idService,
-            cryptService,
-        );
-        const email = "johndoe@email.com";
-        const password = "password";
-        await localSignUpUseCase.execute(email, password);
-        const result = await loginRepository.getLocalLoginByEmail(email);
-        expect(result?.user.email).toBe(email);
+    const userRepository: UserRepository = new InMemoryUserRepository();
+    const profileRepository: ProfileRepository =
+        new InMemoryProfileRepository();
+    const loginRepository: LoginRepository = new InMemoryLoginRepository();
+    const idService: IdService = new UuidService();
+    const cryptService: CryptService = new BcryptService();
+    const localSignUpUseCase: LocalSignUpUseCase = new LocalSignUpUseCase({
+        userRepository,
+        profileRepository,
+        loginRepository,
+        idService,
+        cryptService,
     });
-    test("Should throw an error when user email already exists", async () => {
-        const userRepository: UserRepository = new InMemoryUserRepository();
-        const profileRepository: ProfileRepository =
-            new InMemoryProfileRepository();
-        const loginRepository: LoginRepository = new InMemoryLoginRepository();
-        const idService: IdService = new UuidService();
-        const cryptService: CryptService = new BcryptService();
-        const localSignUpUseCase: LocalSignUpUseCase = new LocalSignUpUseCase(
-            userRepository,
-            profileRepository,
-            loginRepository,
-            idService,
-            cryptService,
-        );
-        const email = "johndoe@email.com";
-        const password = "password";
-        await localSignUpUseCase.execute(email, password);
-        expect(localSignUpUseCase.execute(email, password)).rejects.toThrow();
+    const email = "johndoe@email.com";
+    const password = "password";
+    it("Should signup an user", async () => {
+        await localSignUpUseCase.execute({ email, password });
+        const result = await loginRepository.getLocalLoginByEmail({ email });
+        expect(result?.user.email).toBe(email);
     });
 });

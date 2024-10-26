@@ -1,13 +1,18 @@
 import { RefreshTokenRepository } from "@/src/domain/repositories/RefreshTokenRepository";
 import { prisma } from "../database/prisma/prisma";
 import { RefreshToken } from "@/src/domain/entities/RefreshToken";
+import { User } from "@/src/domain/entities/User";
 
 export class PrismaRefreshTokenRepository implements RefreshTokenRepository {
-    async createRefreshToken(
-        id: string,
-        expiresIn: Date,
-        userId: string,
-    ): Promise<string> {
+    async createRefreshToken({
+        id,
+        expiresIn,
+        userId,
+    }: {
+        id: string;
+        expiresIn: Date;
+        userId: string;
+    }): Promise<string> {
         const result = await prisma.refreshToken.create({
             data: {
                 id,
@@ -18,7 +23,11 @@ export class PrismaRefreshTokenRepository implements RefreshTokenRepository {
         return result.id;
     }
 
-    async getRefreshTokenById(id: string): Promise<RefreshToken | null> {
+    async getRefreshTokenById({
+        id,
+    }: {
+        id: string;
+    }): Promise<RefreshToken | undefined> {
         const result = await prisma.refreshToken.findUnique({
             where: {
                 id,
@@ -27,16 +36,20 @@ export class PrismaRefreshTokenRepository implements RefreshTokenRepository {
                 user: true,
             },
         });
-        if (!result) return null;
-        return new RefreshToken(result.id, result.expiresIn, {
-            id: result.user.id,
-            email: result.user.email,
+        if (!result) return undefined;
+        const user = new User({ id: result.user.id, email: result.user.email });
+        return new RefreshToken({
+            id: result.id,
+            expiresIn: result.expiresIn,
+            user,
         });
     }
 
-    async getRefreshTokenByUserId(
-        userId: string,
-    ): Promise<RefreshToken | null> {
+    async getRefreshTokenByUserId({
+        userId,
+    }: {
+        userId: string;
+    }): Promise<RefreshToken | undefined> {
         const result = await prisma.refreshToken.findUnique({
             where: {
                 userId,
@@ -45,37 +58,16 @@ export class PrismaRefreshTokenRepository implements RefreshTokenRepository {
                 user: true,
             },
         });
-        if (!result) return null;
-        return new RefreshToken(result.id, result.expiresIn, {
-            id: result.user.id,
-            email: result.user.email,
+        if (!result) return undefined;
+        const user = new User({ id: result.user.id, email: result.user.email });
+        return new RefreshToken({
+            id: result.id,
+            expiresIn: result.expiresIn,
+            user,
         });
     }
 
-    async updateRefreshTokenByUserId(
-        id: string,
-        userId: string,
-        expiresIn?: Date,
-    ): Promise<RefreshToken | null> {
-        const result = await prisma.refreshToken.update({
-            data: {
-                id,
-                expiresIn,
-            },
-            where: {
-                userId,
-            },
-            include: {
-                user: true,
-            },
-        });
-        return new RefreshToken(result.id, result.expiresIn, {
-            id: result.user.id,
-            email: result.user.email,
-        });
-    }
-
-    async deleteRefreshToken(id: string): Promise<void> {
+    async deleteRefreshToken({ id }: { id: string }): Promise<void> {
         await prisma.refreshToken.delete({
             where: {
                 id,

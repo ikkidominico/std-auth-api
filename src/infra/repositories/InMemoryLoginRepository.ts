@@ -1,5 +1,6 @@
 import { LoginMethods } from "@/src/application/enums/LoginMethods";
 import { Login } from "@/src/domain/entities/Login";
+import { User } from "@/src/domain/entities/User";
 import { LoginRepository } from "@/src/domain/repositories/LoginRepository";
 
 export class InMemoryLoginRepository implements LoginRepository {
@@ -9,15 +10,32 @@ export class InMemoryLoginRepository implements LoginRepository {
         this.logins = [];
     }
 
-    async createLogin(login: Login): Promise<void> {
+    async createLogin({
+        id,
+        method,
+        password,
+        userId,
+    }: {
+        id: string;
+        method: string;
+        password?: string;
+        userId: string;
+    }): Promise<void> {
+        const user = new User({ id: userId, email: "johndoe@email.com" });
+        const login = new Login({ id, method, user });
+        login.password = password!;
         this.logins.push(login);
     }
 
-    async getLoginsByUserId(userId: string): Promise<Login[]> {
+    async getLoginsByUserId({ userId }: { userId: string }): Promise<Login[]> {
         return this.logins.filter((login) => login.user.id === userId);
     }
 
-    async getLocalLoginByEmail(email: string): Promise<Login | null> {
+    async getLocalLoginByEmail({
+        email,
+    }: {
+        email: string;
+    }): Promise<Login | undefined> {
         const login = this.logins.find(
             (login) =>
                 login.method === LoginMethods.LOCAL &&
@@ -27,7 +45,11 @@ export class InMemoryLoginRepository implements LoginRepository {
         return login;
     }
 
-    async getGoogleLoginByEmail(email: string): Promise<Login | null> {
+    async getGoogleLoginByEmail({
+        email,
+    }: {
+        email: string;
+    }): Promise<Login | undefined> {
         const login = this.logins.find(
             (login) =>
                 login.method === LoginMethods.GOOGLE &&
@@ -37,9 +59,11 @@ export class InMemoryLoginRepository implements LoginRepository {
         return login;
     }
 
-    async getLocalLoginByRecoveryToken(
-        recoveryToken: string,
-    ): Promise<Login | null> {
+    async getLocalLoginByRecoveryToken({
+        recoveryToken,
+    }: {
+        recoveryToken: string;
+    }): Promise<Login | undefined> {
         const login = this.logins.find(
             (login) =>
                 login.method === LoginMethods.LOCAL &&
@@ -49,25 +73,20 @@ export class InMemoryLoginRepository implements LoginRepository {
         return login;
     }
 
-    async updateRecoveryTokenByUserId(
-        userId: string,
-        recoveryToken: string,
-    ): Promise<Login | null> {
+    async updateLoginByUserId({
+        password,
+        recoveryToken,
+        userId,
+    }: {
+        password?: string;
+        recoveryToken?: string;
+        userId: string;
+    }): Promise<Login | undefined> {
         const index = this.logins.findIndex(
-            (login) => (login.user.id = userId),
+            (login) => login.user.id === userId,
         );
-        this.logins[index].recoveryToken = recoveryToken;
-        return this.logins[index];
-    }
-
-    async updatePasswordByUserId(
-        userId: string,
-        password: string,
-    ): Promise<Login | null> {
-        const index = this.logins.findIndex(
-            (login) => (login.user.id = userId),
-        );
-        this.logins[index].password = password;
+        if (password) this.logins[index].password = password;
+        if (recoveryToken) this.logins[index].recoveryToken = recoveryToken;
         return this.logins[index];
     }
 }

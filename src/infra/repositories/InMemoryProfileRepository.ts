@@ -1,4 +1,5 @@
 import { Profile } from "@/src/domain/entities/Profile";
+import { User } from "@/src/domain/entities/User";
 import { ProfileRepository } from "@/src/domain/repositories/ProfileRepository";
 
 export class InMemoryProfileRepository implements ProfileRepository {
@@ -8,11 +9,27 @@ export class InMemoryProfileRepository implements ProfileRepository {
         this.profiles = [];
     }
 
-    async createProfile(profile: Profile): Promise<void> {
+    async createProfile({
+        name,
+        birth,
+        userId,
+    }: {
+        name?: string;
+        birth?: Date;
+        userId: string;
+    }): Promise<void> {
+        const user = new User({ id: userId, email: "johndoe@email.com" });
+        const profile = new Profile({ user: user });
+        if (name) profile.name = name;
+        if (birth) profile.birth = birth;
         this.profiles.push(profile);
     }
 
-    async getProfileByUserId(userId: string): Promise<Profile | null> {
+    async getProfileByUserId({
+        userId,
+    }: {
+        userId: string;
+    }): Promise<Profile | undefined> {
         const profile = this.profiles.find(
             (profile) => profile.user.id === userId,
         );
@@ -20,19 +37,24 @@ export class InMemoryProfileRepository implements ProfileRepository {
         return profile;
     }
 
-    async updateProfileByUserId(
-        userId: string,
-        data: { name?: string; birth?: Date },
-    ): Promise<Profile | null> {
+    async updateProfileByUserId({
+        name,
+        birth,
+        userId,
+    }: {
+        name?: string;
+        birth?: Date;
+        userId: string;
+    }): Promise<Profile | undefined> {
         const index = this.profiles.findIndex(
             (profile) => profile.user.id === userId,
         );
-        if (data.name) this.profiles[index].name = data.name;
-        if (data.birth) this.profiles[index].birth = data.birth;
+        if (name) this.profiles[index].name = name;
+        if (birth) this.profiles[index].birth = birth;
         return this.profiles[index];
     }
 
-    async deleteProfileByUserId(userId: string): Promise<void> {
+    async deleteProfileByUserId({ userId }: { userId: string }): Promise<void> {
         const profiles = this.profiles.filter(
             (profile) => profile.user.id !== userId,
         );

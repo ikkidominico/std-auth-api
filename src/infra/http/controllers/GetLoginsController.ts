@@ -4,11 +4,11 @@ import { GetLoginsUseCase } from "@/src/application/usecases/GetLoginsUseCase";
 
 export class GetLoginsController {
     loginRepository: LoginRepository = new PrismaLoginRepository();
-    getLoginsUseCase: GetLoginsUseCase = new GetLoginsUseCase(
-        this.loginRepository,
-    );
+    getLoginsUseCase: GetLoginsUseCase = new GetLoginsUseCase({
+        loginRepository: this.loginRepository,
+    });
 
-    async handle(userId: string) {
-        return this.getLoginsUseCase.execute(userId);
+    async handle({ userId }: { userId: string }) {
+        return this.getLoginsUseCase.execute({ userId });
     }
 }

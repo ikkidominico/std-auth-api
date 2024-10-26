@@ -12,19 +12,21 @@ export class InMemoryUserRepository implements UserRepository {
         this.users.push(user);
     }
 
-    async getUserById(id: string): Promise<User | null> {
-        const user = this.users.find((user) => user.id === id);
-        if (!user) return null;
-        return user;
-    }
-
-    async getUserByEmail(email: string): Promise<User | null> {
-        const user = this.users.find((user) => user.email === email);
-        if (!user) return null;
-        return user;
-    }
-
     async getUsers(): Promise<User[]> {
         return this.users;
+    }
+
+    async getUserById({ id }: { id: string }): Promise<User | undefined> {
+        const user = this.users.find((user) => user.id === id);
+        return user;
+    }
+
+    async getUserByEmail({
+        email,
+    }: {
+        email: string;
+    }): Promise<User | undefined> {
+        const user = this.users.find((user) => user.email === email);
+        return user;
     }
 }

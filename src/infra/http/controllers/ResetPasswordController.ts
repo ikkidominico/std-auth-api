@@ -8,12 +8,18 @@ export class ResetPasswordController {
     loginRepository: LoginRepository = new PrismaLoginRepository();
     cryptService: CryptService = new BcryptService();
 
-    resetPasswordUseCase: ResetPasswordUseCase = new ResetPasswordUseCase(
-        this.loginRepository,
-        this.cryptService,
-    );
+    resetPasswordUseCase: ResetPasswordUseCase = new ResetPasswordUseCase({
+        loginRepository: this.loginRepository,
+        cryptService: this.cryptService,
+    });
 
-    async handle(recoveryToken: string, password: string) {
-        return this.resetPasswordUseCase.execute(recoveryToken, password);
+    async handle({
+        recoveryToken,
+        password,
+    }: {
+        recoveryToken: string;
+        password: string;
+    }) {
+        return this.resetPasswordUseCase.execute({ recoveryToken, password });
     }
 }

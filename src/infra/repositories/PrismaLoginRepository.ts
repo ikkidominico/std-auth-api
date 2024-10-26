@@ -5,18 +5,57 @@ import { prisma } from "../database/prisma/prisma";
 import { User } from "@/src/domain/entities/User";
 
 export class PrismaLoginRepository implements LoginRepository {
-    async createLogin(login: Login): Promise<void> {
+    async createLogin({
+        id,
+        method,
+        password,
+        userId,
+    }: {
+        id: string;
+        method: string;
+        password?: string;
+        userId: string;
+    }): Promise<void> {
         await prisma.login.create({
             data: {
-                id: login.id,
-                method: login.method,
-                password: login.password,
-                userId: login.user.id,
+                id,
+                method,
+                password,
+                userId,
             },
         });
     }
 
-    async getLocalLoginByEmail(email: string): Promise<Login | null> {
+    async getLoginsByUserId({ userId }: { userId: string }): Promise<Login[]> {
+        const result = await prisma.login.findMany({
+            where: {
+                userId,
+            },
+            include: {
+                user: true,
+            },
+        });
+
+        return result.map((item) => {
+            const login = new Login({
+                id: item.id,
+                method: item.method,
+                user: new User({
+                    id: item.user.id,
+                    email: item.user.email,
+                }),
+            });
+            if (item.password) login.password = item.password;
+            if (item.recoveryToken) login.recoveryToken = item.recoveryToken;
+            return login;
+        });
+    }
+
+    async getLocalLoginByEmail({
+        email,
+    }: {
+        email: string;
+    }): Promise<Login | undefined> {
         const result = await prisma.login.findFirst({
             where: {
                 user: {
@@ -29,20 +68,31 @@ export class PrismaLoginRepository implements LoginRepository {
             },
         });
 
-        if (!result) return null;
+        if (!result) return undefined;
 
-        const user: User = new User(result.user.id, result.user.email);
+        const user = new User({
+            id: result.user.id,
+            email: result.user.email,
+        });
 
-        const login: Login = new Login(
-            result.id,
-            result.method,
+        const login = new Login({
+            id: result.id,
+            method: result.method,
             user,
-            result.password as string | undefined,
-        );
+        });
+
+        if (result.password) login.password = result.password;
+
+        if (result.recoveryToken) login.recoveryToken = result.recoveryToken;
+
         return login;
     }
 
-    async getGoogleLoginByEmail(email: string): Promise<Login | null> {
+    async getGoogleLoginByEmail({
+        email,
+    }: {
+        email: string;
+    }): Promise<Login | undefined> {
         const result = await prisma.login.findFirst({
             where: {
                 user: {
@@ -55,22 +105,25 @@ export class PrismaLoginRepository implements LoginRepository {
             },
         });
 
-        if (!result) return null;
+        if (!result) return undefined;
 
-        const user: User = new User(result.user.id, result.user.email);
+        const user = new User({
+            id: result.user.id,
+            email: result.user.email,
+        });
 
-        const login: Login = new Login(
-            result.id,
-            result.method,
+        return new Login({
+            id: result.id,
+            method: result.method,
             user,
-            result.password as string | undefined,
-        );
-        return login;
+        });
     }
 
-    async getLocalLoginByRecoveryToken(
-        recoveryToken: string,
-    ): Promise<Login | null> {
+    async getLocalLoginByRecoveryToken({
+        recoveryToken,
+    }: {
+        recoveryToken: string;
+    }): Promise<Login | undefined> {
         const result = await prisma.login.findFirst({
             where: {
                 recoveryToken,
@@ -81,48 +134,38 @@ export class PrismaLoginRepository implements LoginRepository {
             },
         });
 
-        if (!result) return null;
+        if (!result) return undefined;
 
-        const user: User = new User(result.user.id, result.user.email);
+        const user: User = new User({
+            id: result.user.id,
+            email: result.user.email,
+        });
 
-        const login: Login = new Login(
-            result.id,
-            result.method,
+        const login = new Login({
+            id: result.id,
+            method: result.method,
             user,
-            result.password as string | undefined,
-        );
+        });
+
+        if (result.password) login.password = result.password;
+
+        if (result.recoveryToken) login.recoveryToken = result.recoveryToken;
+
         return login;
     }
 
-    async getLoginsByUserId(userId: string): Promise<Login[]> {
-        const result = await prisma.login.findMany({
-            where: {
-                userId,
-            },
-            include: {
-                user: true,
-            },
-        });
-
-        const logins = result.map(
-            (login) =>
-                new Login(
-                    login.id,
-                    login.method,
-                    login.user,
-                    login.password as string | undefined,
-                ),
-        );
-
-        return logins;
-    }
-
-    async updateRecoveryTokenByUserId(
-        userId: string,
-        recoveryToken: string,
-    ): Promise<Login | null> {
+    async updateLoginByUserId({
+        password,
+        recoveryToken,
+        userId,
+    }: {
+        password?: string;
+        recoveryToken?: string;
+        userId: string;
+    }): Promise<Login | undefined> {
         const result = await prisma.login.update({
             data: {
+                password,
                 recoveryToken,
             },
             where: {
@@ -132,37 +175,22 @@ export class PrismaLoginRepository implements LoginRepository {
                 user: true,
             },
         });
-        return new Login(
-            result.id,
-            result.method,
-            result.user,
-            result.password as string | undefined,
-            result.recoveryToken as string | undefined,
-        );
-    }
 
-    async updatePasswordByUserId(
-        userId: string,
-        password: string,
-    ): Promise<Login | null> {
-        const result = await prisma.login.update({
-            data: {
-                password,
-                recoveryToken: undefined,
-            },
-            where: {
-                userId_method: { userId, method: LoginMethods.LOCAL },
-            },
-            include: {
-                user: true,
-            },
+        const user: User = new User({
+            id: result.user.id,
+            email: result.user.email,
         });
-        return new Login(
-            result.id,
-            result.method,
-            result.user,
-            result.password as string | undefined,
-            result.recoveryToken as string | undefined,
-        );
+
+        const login = new Login({
+            id: result.id,
+            method: result.method,
+            user,
+        });
+
+        if (result.password) login.password = result.password;
+
+        if (result.recoveryToken) login.recoveryToken = result.recoveryToken;
+
+        return login;
     }
 }

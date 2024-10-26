@@ -1,14 +1,31 @@
 import { Profile } from "../entities/Profile";
 
 export interface ProfileRepository {
-    createProfile(profile: Profile): Promise<void>;
+    createProfile({
+        name,
+        birth,
+        userId,
+    }: {
+        name?: string;
+        birth?: Date;
+        userId: string;
+    }): Promise<void>;
 
-    getProfileByUserId(userId: string): Promise<Profile | null>;
+    getProfileByUserId({
+        userId,
+    }: {
+        userId: string;
+    }): Promise<Profile | undefined>;
 
-    updateProfileByUserId(
-        userId: string,
-        data: { name?: string; birth?: Date },
-    ): Promise<Profile | null>;
+    updateProfileByUserId({
+        name,
+        birth,
+        userId,
+    }: {
+        name?: string;
+        birth?: Date;
+        userId: string;
+    }): Promise<Profile | undefined>;
 
-    deleteProfileByUserId(userId: string): Promise<void>;
+    deleteProfileByUserId({ userId }: { userId: string }): Promise<void>;
 }

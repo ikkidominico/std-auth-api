@@ -15,12 +15,17 @@ export class NodeMailerService implements MailService {
         });
     }
 
-    async send(
-        from: string,
-        to: string,
-        subject: string,
-        body: string,
-    ): Promise<void> {
+    async send({
+        from,
+        to,
+        subject,
+        body,
+    }: {
+        from: string;
+        to: string;
+        subject: string;
+        body: string;
+    }): Promise<void> {
         await this.transporter.sendMail({
             from,
             to,

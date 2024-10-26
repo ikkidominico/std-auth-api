@@ -1,14 +1,20 @@
 import { ProfileRepository } from "@/src/domain/repositories/ProfileRepository";
 
 export class GetProfileUseCase {
-    profileRepository: ProfileRepository;
+    private readonly profileRepository: ProfileRepository;
 
-    constructor(profileRepository: ProfileRepository) {
+    constructor({
+        profileRepository,
+    }: {
+        profileRepository: ProfileRepository;
+    }) {
         this.profileRepository = profileRepository;
     }
 
-    async execute(userId: string) {
-        const profile = await this.profileRepository.getProfileByUserId(userId);
+    public async execute({ userId }: { userId: string }) {
+        const profile = await this.profileRepository.getProfileByUserId({
+            userId,
+        });
         if (!profile) throw new Error("Profile not found.");
         return profile;
     }

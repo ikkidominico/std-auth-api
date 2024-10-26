@@ -17,15 +17,15 @@ export class SignUpController {
     idService: IdService = new UuidService();
     cryptService: CryptService = new BcryptService();
 
-    localSignUpUseCase: LocalSignUpUseCase = new LocalSignUpUseCase(
-        this.userRepository,
-        this.profileRepository,
-        this.loginRepository,
-        this.idService,
-        this.cryptService,
-    );
+    localSignUpUseCase: LocalSignUpUseCase = new LocalSignUpUseCase({
+        userRepository: this.userRepository,
+        profileRepository: this.profileRepository,
+        loginRepository: this.loginRepository,
+        idService: this.idService,
+        cryptService: this.cryptService,
+    });
 
-    async handle(email: string, password: string) {
-        return this.localSignUpUseCase.execute(email, password);
+    async handle({ email, password }: { email: string; password: string }) {
+        return this.localSignUpUseCase.execute({ email, password });
     }
 }

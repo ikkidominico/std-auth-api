@@ -9,6 +9,8 @@ import { RefreshTokenRepository } from "@/src/domain/repositories/RefreshTokenRe
 import { PrismaRefreshTokenRepository } from "../../repositories/PrismaRefreshTokenRepository";
 import { IdService } from "@/src/application/services/IdService";
 import { UuidService } from "../../services/UuidService";
+import { CreateTokensUseCase } from "@/src/application/usecases/CreateTokensUseCase";
+import { CreateRefreshTokenUseCase } from "@/src/application/usecases/CreateRefreshTokenUseCase";
 
 export class LoginController {
     loginRepository: LoginRepository = new PrismaLoginRepository();
@@ -17,16 +19,23 @@ export class LoginController {
     idService: IdService = new UuidService();
     cryptService: CryptService = new BcryptService();
     jwtService: JwtService = new JsonWebTokenService();
+    createRefreshTokenUseCase: CreateRefreshTokenUseCase =
+        new CreateRefreshTokenUseCase({
+            refreshTokenRepository: this.refreshTokenRepository,
+            idService: this.idService,
+        });
+    createTokensUseCase: CreateTokensUseCase = new CreateTokensUseCase({
+        jwtService: this.jwtService,
+        createRefreshTokenUseCase: this.createRefreshTokenUseCase,
+    });
 
-    localLoginUseCase: LocalLoginUseCase = new LocalLoginUseCase(
-        this.loginRepository,
-        this.refreshTokenRepository,
-        this.idService,
-        this.cryptService,
-        this.jwtService,
-    );
+    localLoginUseCase: LocalLoginUseCase = new LocalLoginUseCase({
+        loginRepository: this.loginRepository,
+        cryptService: this.cryptService,
+        createTokensUseCase: this.createTokensUseCase,
+    });
 
-    async handle(email: string, password: string) {
+    async handle({ email, password }: { email: string; password: string }) {
         return this.localLoginUseCase.execute({ email, password });
     }
 }

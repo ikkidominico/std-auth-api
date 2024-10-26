@@ -1,13 +1,33 @@
 import { User } from "./User";
 
 export class RefreshToken {
-    id: string;
-    expiresIn: Date;
-    user: User;
+    private _id: string;
+    private _expiresIn: Date;
+    private _user: User;
 
-    constructor(id: string, expiresIn: Date, user: User) {
-        this.id = id;
-        this.expiresIn = expiresIn;
-        this.user = user;
+    constructor({
+        id,
+        expiresIn,
+        user,
+    }: {
+        id: string;
+        expiresIn: Date;
+        user: User;
+    }) {
+        this._id = id;
+        this._expiresIn = expiresIn;
+        this._user = user;
+    }
+
+    public get id() {
+        return this._id;
+    }
+
+    public get expiresIn() {
+        return this._expiresIn;
+    }
+
+    public get user() {
+        return this._user;
     }
 }

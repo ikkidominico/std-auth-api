@@ -4,11 +4,19 @@ import { UpdateProfileUseCase } from "@/src/application/usecases/UpdateProfileUs
 
 export class UpdateProfileController {
     profileRepository: ProfileRepository = new PrismaProfileRepository();
-    updateProfileUseCase: UpdateProfileUseCase = new UpdateProfileUseCase(
-        this.profileRepository,
-    );
+    updateProfileUseCase: UpdateProfileUseCase = new UpdateProfileUseCase({
+        profileRepository: this.profileRepository,
+    });
 
-    async handle(userId: string, name?: string, birth?: Date) {
-        return this.updateProfileUseCase.execute(userId, name, birth);
+    async handle({
+        name,
+        birth,
+        userId,
+    }: {
+        name?: string;
+        birth?: Date;
+        userId: string;
+    }) {
+        return this.updateProfileUseCase.execute({ name, birth, userId });
     }
 }

@@ -4,18 +4,29 @@ import { prisma } from "../database/prisma/prisma";
 import { User } from "@/src/domain/entities/User";
 
 export class PrismaProfileRepository implements ProfileRepository {
-    async createProfile(profile: Profile): Promise<void> {
-        const { name, birth, user } = profile;
+    async createProfile({
+        name,
+        birth,
+        userId,
+    }: {
+        name?: string;
+        birth?: Date;
+        userId: string;
+    }): Promise<void> {
         await prisma.profile.create({
             data: {
                 name,
                 birth,
-                userId: user.id,
+                userId,
             },
         });
     }
 
-    async getProfileByUserId(userId: string): Promise<Profile | null> {
+    async getProfileByUserId({
+        userId,
+    }: {
+        userId: string;
+    }): Promise<Profile | undefined> {
         const result = await prisma.profile.findUnique({
             where: {
                 userId,
@@ -24,20 +35,23 @@ export class PrismaProfileRepository implements ProfileRepository {
                 user: true,
             },
         });
-        if (!result) return null;
-        const user = new User(result.user.id, result.user.email);
-        return new Profile(
-            user,
-            result.name as string | undefined,
-            result.birth as Date | undefined,
-        );
+        if (!result) return undefined;
+        const user = new User({ id: result.user.id, email: result.user.email });
+        const profile = new Profile({ user });
+        if (result.name) profile.name = result.name;
+        if (result.birth) profile.birth = result.birth;
+        return profile;
     }
 
-    async updateProfileByUserId(
-        userId: string,
-        data: { name?: string; birth?: Date },
-    ): Promise<Profile | null> {
-        const { name, birth } = data;
+    async updateProfileByUserId({
+        name,
+        birth,
+        userId,
+    }: {
+        name?: string;
+        birth?: Date;
+        userId: string;
+    }): Promise<Profile | undefined> {
         const result = await prisma.profile.update({
             data: {
                 name,
@@ -50,15 +64,14 @@ export class PrismaProfileRepository implements ProfileRepository {
                 user: true,
             },
         });
-        const user = new User(result.user.id, result.user.email);
-        return new Profile(
-            user,
-            result.name as string | undefined,
-            result.birth as Date | undefined,
-        );
+        const user = new User({ id: result.user.id, email: result.user.email });
+        const profile = new Profile({ user });
+        if (result.name) profile.name = result.name;
+        if (result.birth) profile.birth = result.birth;
+        return profile;
     }
 
-    async deleteProfileByUserId(userId: string): Promise<void> {
+    async deleteProfileByUserId({ userId }: { userId: string }): Promise<void> {
         await prisma.profile.delete({
             where: {
                 userId,

@@ -16,14 +16,15 @@ export class RefreshAccessTokenController {
     jwtService: JwtService = new JsonWebTokenService();
 
     refreshAccessTokenUseCase: RefreshAccessTokenUseCase =
-        new RefreshAccessTokenUseCase(
-            this.refreshTokenRepository,
-            this.userRepository,
-            this.idService,
-            this.jwtService,
-        );
+        new RefreshAccessTokenUseCase({
+            refreshTokenRepository: this.refreshTokenRepository,
+            userRepository: this.userRepository,
+            jwtService: this.jwtService,
+        });
 
-    async handle(refreshToken: string) {
-        return this.refreshAccessTokenUseCase.execute(refreshToken);
+    async handle({ refreshToken }: { refreshToken: string }) {
+        return this.refreshAccessTokenUseCase.execute({
+            refreshTokenId: refreshToken,
+        });
     }
 }

@@ -1,27 +1,31 @@
 import { LoginRepository } from "@/src/domain/repositories/LoginRepository";
 import { User } from "@/src/domain/entities/User";
-import { Login } from "@/src/domain/entities/Login";
 import { LoginMethods } from "../enums/LoginMethods";
 import { CryptService } from "../services/CryptService";
 import { UserRepository } from "@/src/domain/repositories/UserRepository";
 import { IdService } from "../services/IdService";
 import { ProfileRepository } from "@/src/domain/repositories/ProfileRepository";
-import { Profile } from "@/src/domain/entities/Profile";
 
 export class LocalSignUpUseCase {
-    userRepository: UserRepository;
-    profileRepository: ProfileRepository;
-    loginRepository: LoginRepository;
-    idService: IdService;
-    cryptService: CryptService;
+    private readonly userRepository: UserRepository;
+    private readonly profileRepository: ProfileRepository;
+    private readonly loginRepository: LoginRepository;
+    private readonly idService: IdService;
+    private readonly cryptService: CryptService;
 
-    constructor(
-        userRepository: UserRepository,
-        profileRepository: ProfileRepository,
-        loginRepository: LoginRepository,
-        idService: IdService,
-        cryptService: CryptService,
-    ) {
+    constructor({
+        userRepository,
+        profileRepository,
+        loginRepository,
+        idService,
+        cryptService,
+    }: {
+        userRepository: UserRepository;
+        profileRepository: ProfileRepository;
+        loginRepository: LoginRepository;
+        idService: IdService;
+        cryptService: CryptService;
+    }) {
         this.userRepository = userRepository;
         this.profileRepository = profileRepository;
         this.loginRepository = loginRepository;
@@ -29,30 +33,22 @@ export class LocalSignUpUseCase {
         this.cryptService = cryptService;
     }
 
-    async execute(email: string, password: string) {
-        const userAlreadyExists =
-            await this.userRepository.getUserByEmail(email);
-        if (userAlreadyExists) throw new Error("User already exists.");
+    async execute({ email, password }: { email: string; password: string }) {
+        const userExists = await this.userRepository.getUserByEmail({ email });
 
-        const user = new User(this.idService.getUuid(), email);
+        if (userExists) throw new Error("User already exists.");
 
-        const profile = new Profile(user);
+        const user = new User({ id: this.idService.getUuid(), email });
 
-        const login = new Login(
-            this.idService.getUuid(),
-            LoginMethods.LOCAL,
-            user,
-            await this.cryptService.hash(password),
-        );
+        await this.userRepository.createUser(user);
 
-        try {
-            await this.userRepository.createUser(user);
-            await this.profileRepository.createProfile(profile);
-            await this.loginRepository.createLogin(login);
-        } catch {
-            throw new Error("Failed to save user informations.");
-        }
+        await this.profileRepository.createProfile({ userId: user.id });
 
-        return login;
+        await this.loginRepository.createLogin({
+            id: this.idService.getUuid(),
+            method: LoginMethods.LOCAL,
+            password: await this.cryptService.hash({ text: password }),
+            userId: user.id,
+        });
     }
 }

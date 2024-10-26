@@ -4,9 +4,9 @@ import { Router } from "./infra/http/Router";
 
 function main() {
     const httpServer: HttpServer = new ExpressAdapter();
-    const router: Router = new Router(httpServer);
+    const router: Router = new Router({ httpServer });
     router.route();
-    httpServer.listen(Number(process.env.PORT) || 3000);
+    httpServer.listen({ port: Number(process.env.PORT) || 3000 });
 }
 
 main();

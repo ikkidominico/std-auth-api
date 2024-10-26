@@ -5,7 +5,7 @@ export interface UserRepository {
 
     getUsers(): Promise<User[]>;
 
-    getUserById(id: string): Promise<User | null>;
+    getUserById({ id }: { id: string }): Promise<User | undefined>;
 
-    getUserByEmail(email: string): Promise<User | null>;
+    getUserByEmail({ email }: { email: string }): Promise<User | undefined>;
 }

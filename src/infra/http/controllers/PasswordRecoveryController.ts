@@ -12,13 +12,13 @@ export class PasswordRecoveryController {
     mailService: MailService = new NodeMailerService();
 
     passwordRecoveryUseCase: PasswordRecoveryUseCase =
-        new PasswordRecoveryUseCase(
-            this.loginRepository,
-            this.cryptService,
-            this.mailService,
-        );
+        new PasswordRecoveryUseCase({
+            loginRepository: this.loginRepository,
+            cryptService: this.cryptService,
+            mailService: this.mailService,
+        });
 
-    async handle(email: string) {
-        return this.passwordRecoveryUseCase.execute(email);
+    async handle({ email }: { email: string }) {
+        return this.passwordRecoveryUseCase.execute({ email });
     }
 }

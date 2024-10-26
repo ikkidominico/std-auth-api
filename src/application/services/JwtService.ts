@@ -8,11 +8,15 @@ export type JwtOptions = {
 };
 
 export interface JwtService {
-    sign(
-        payload: JwtPayload,
-        key: string,
-        options: JwtOptions,
-    ): Promise<string>;
+    sign({
+        payload,
+        key,
+        options,
+    }: {
+        payload: JwtPayload;
+        key: string;
+        options: JwtOptions;
+    }): Promise<string>;
 
-    verify(token: string, key: string): Promise<object>;
+    verify({ token, key }: { token: string; key: string }): Promise<object>;
 }

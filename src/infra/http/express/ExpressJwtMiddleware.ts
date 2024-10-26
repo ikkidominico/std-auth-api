@@ -19,9 +19,12 @@ export async function ExpressJwtMiddleware(
         }
 
         const result: { sub: string; email: string } = (await jwtService.verify(
-            token,
-            (process.env.JWT_KEY as string) ||
-                (process.env.TEST_JWT_KEY as string),
+            {
+                token,
+                key:
+                    (process.env.JWT_KEY as string) ||
+                    (process.env.TEST_JWT_KEY as string),
+            },
         )) as { sub: string; email: string };
 
         request.user = { id: result.sub, email: result.email };

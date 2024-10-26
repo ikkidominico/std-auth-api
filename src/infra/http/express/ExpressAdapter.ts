@@ -3,23 +3,28 @@ import { HttpServer } from "../HttpServer";
 import { HttpMethods } from "../enums/HttpMethodsEnum";
 
 export class ExpressAdapter implements HttpServer {
-    server: Application;
+    private readonly server: Application;
 
     constructor() {
         this.server = express();
         this.server.use(express.json());
     }
 
-    on(
-        method: HttpMethods,
-        url: string,
-        callback: (request: unknown) => unknown,
+    on({
+        method,
+        url,
+        callback,
+        middlewares,
+    }: {
+        method: HttpMethods;
+        url: string;
+        callback: (request: unknown) => unknown;
         middlewares?: ((
             request: Request,
             response: Response,
             next: NextFunction,
-        ) => void)[],
-    ): void {
+        ) => void)[];
+    }): void {
         this.server[method](
             url,
             middlewares ? middlewares : [],
@@ -38,7 +43,7 @@ export class ExpressAdapter implements HttpServer {
         );
     }
 
-    listen(port: number): void {
+    listen({ port }: { port: number }): void {
         this.server.listen(port);
     }
 }

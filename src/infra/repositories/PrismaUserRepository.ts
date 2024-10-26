@@ -12,31 +12,35 @@ export class PrismaUserRepository implements UserRepository {
         });
     }
 
-    async getUserById(id: string): Promise<User | null> {
-        const result = await prisma.user.findUnique({
-            where: {
-                id: id,
-            },
-        });
-        if (!result) return null;
-        const user: User = new User(result.id, result.email);
-        return user;
-    }
-
-    async getUserByEmail(email: string): Promise<User | null> {
-        const result = await prisma.user.findUnique({
-            where: {
-                email: email,
-            },
-        });
-        if (!result) return null;
-        const user: User = new User(result.id, result.email);
-        return user;
-    }
-
     async getUsers(): Promise<User[]> {
         const result = await prisma.user.findMany();
-        const users = result.map((user) => new User(user.id, user.email));
+        const users = result.map(
+            (user) => new User({ id: user.id, email: user.email }),
+        );
         return users;
+    }
+
+    async getUserById({ id }: { id: string }): Promise<User | undefined> {
+        const result = await prisma.user.findUnique({
+            where: {
+                id,
+            },
+        });
+        if (!result) return undefined;
+        return new User({ id: result.id, email: result.email });
+    }
+
+    async getUserByEmail({
+        email,
+    }: {
+        email: string;
+    }): Promise<User | undefined> {
+        const result = await prisma.user.findUnique({
+            where: {
+                email,
+            },
+        });
+        if (!result) return undefined;
+        return new User({ id: result.id, email: result.email });
     }
 }

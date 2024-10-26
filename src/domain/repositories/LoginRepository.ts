@@ -1,23 +1,45 @@
 import { Login } from "../entities/Login";
 
 export interface LoginRepository {
-    createLogin(login: Login): Promise<void>;
+    createLogin({
+        id,
+        method,
+        password,
+        userId,
+    }: {
+        id: string;
+        method: string;
+        password?: string;
+        userId: string;
+    }): Promise<void>;
 
-    getLoginsByUserId(userId: string): Promise<Login[]>;
+    getLoginsByUserId({ userId }: { userId: string }): Promise<Login[]>;
 
-    getLocalLoginByEmail(email: string): Promise<Login | null>;
+    getLocalLoginByEmail({
+        email,
+    }: {
+        email: string;
+    }): Promise<Login | undefined>;
 
-    getGoogleLoginByEmail(email: string): Promise<Login | null>;
+    getGoogleLoginByEmail({
+        email,
+    }: {
+        email: string;
+    }): Promise<Login | undefined>;
 
-    getLocalLoginByRecoveryToken(recoveryToken: string): Promise<Login | null>;
+    getLocalLoginByRecoveryToken({
+        recoveryToken,
+    }: {
+        recoveryToken: string;
+    }): Promise<Login | undefined>;
 
-    updateRecoveryTokenByUserId(
-        userId: string,
-        recoveryToken: string,
-    ): Promise<Login | null>;
-
-    updatePasswordByUserId(
-        userId: string,
-        password: string,
-    ): Promise<Login | null>;
+    updateLoginByUserId({
+        password,
+        recoveryToken,
+        userId,
+    }: {
+        password?: string;
+        recoveryToken?: string;
+        userId: string;
+    }): Promise<Login | undefined>;
 }

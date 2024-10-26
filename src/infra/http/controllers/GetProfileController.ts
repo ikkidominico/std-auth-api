@@ -4,11 +4,11 @@ import { PrismaProfileRepository } from "../../repositories/PrismaProfileReposit
 
 export class GetProfileController {
     profileRepository: ProfileRepository = new PrismaProfileRepository();
-    getProfileUseCase: GetProfileUseCase = new GetProfileUseCase(
-        this.profileRepository,
-    );
+    getProfileUseCase: GetProfileUseCase = new GetProfileUseCase({
+        profileRepository: this.profileRepository,
+    });
 
-    async handle(userId: string) {
-        return this.getProfileUseCase.execute(userId);
+    async handle({ userId }: { userId: string }) {
+        return this.getProfileUseCase.execute({ userId });
     }
 }
