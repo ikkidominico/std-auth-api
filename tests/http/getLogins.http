@@ -1,3 +1,0 @@
-GET http://localhost:3000/logins HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiMWNkZjBhYS1hMDFmLTQ1ZjgtODc0OC1mYTI4MzEzNjQ3MTMiLCJlbWFpbCI6Imx1aXpoZW5yaXF1ZWRvbWluaWNvQGdtYWlsLmNvbSIsImlhdCI6MTcyOTk2OTc2MCwiZXhwIjoxNzI5OTcxNTYwfQ.h-aRedXNpCQ_Ig5Cv1_AbruVF8iAd8mF7HWDfv4X9Qs
-Content-Type: application/json

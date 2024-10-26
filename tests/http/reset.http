@@ -1,6 +1,0 @@
-POST http://localhost:3000/reset/e92290331ef4c210e40370269e039a88762eb9682ad88eae2979e74e26ba81b880c0d4769320059597b533961f216e20 HTTP/1.1
-Content-Type: application/json
-
-{
-    "password": "newPassword"
-}
