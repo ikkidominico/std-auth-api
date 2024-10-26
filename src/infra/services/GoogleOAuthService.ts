@@ -6,6 +6,8 @@ export type GoogleTokensResult = {
     refresh_token: string;
     scope: string;
     id_token: string;
+    error: string;
+    error_descriptions: string;
 };
 
 export type GoogleUserResult = {
@@ -60,7 +62,6 @@ export class GoogleOAuthService {
                 },
             });
             const json = await response.json();
-            console.log(json);
             return json as GoogleUserResult;
         } catch {
             throw new Error("Failed to fetch Google user informations.");

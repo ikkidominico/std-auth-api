@@ -8,8 +8,8 @@ import { ProfileRepository } from "@/src/domain/repositories/ProfileRepository";
 
 export class LocalSignUpUseCase {
     private readonly userRepository: UserRepository;
-    private readonly profileRepository: ProfileRepository;
     private readonly loginRepository: LoginRepository;
+    private readonly profileRepository: ProfileRepository;
     private readonly idService: IdService;
     private readonly cryptService: CryptService;
 
@@ -36,13 +36,19 @@ export class LocalSignUpUseCase {
     async execute({ email, password }: { email: string; password: string }) {
         const userExists = await this.userRepository.getUserByEmail({ email });
 
-        if (userExists) throw new Error("User already exists.");
+        let user;
 
-        const user = new User({ id: this.idService.getUuid(), email });
-
-        await this.userRepository.createUser(user);
-
-        await this.profileRepository.createProfile({ userId: user.id });
+        if (userExists) {
+            const localLoginExists =
+                await this.loginRepository.getLocalLoginByEmail({ email });
+            if (localLoginExists)
+                throw new Error("User local login already exists.");
+            user = new User({ id: userExists.id, email: userExists.email });
+        } else {
+            user = new User({ id: this.idService.getUuid(), email });
+            await this.userRepository.createUser(user);
+            await this.profileRepository.createProfile({ userId: user.id });
+        }
 
         await this.loginRepository.createLogin({
             id: this.idService.getUuid(),

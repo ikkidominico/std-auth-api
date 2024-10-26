@@ -52,6 +52,8 @@ export class GoogleOAuthController {
     async handle({ code }: { code: string }) {
         const googleTokensResult: GoogleTokensResult =
             await this.googleOAuthService.getGoogleOAuthTokens(code);
+        if (googleTokensResult.error)
+            throw new Error("Failed to get Google OAuth tokens.");
         const googleUserResult: GoogleUserResult =
             await this.googleOAuthService.getGoogleUser(
                 googleTokensResult.id_token,
