@@ -13,6 +13,14 @@ import { UpdateProfileController } from "./controllers/UpdateProfileController";
 import { HttpMethods } from "./enums/HttpMethodsEnum";
 import { ExpressJwtMiddleware } from "./express/ExpressJwtMiddleware";
 import { HttpServer } from "./HttpServer";
+import { ExpressValidateMiddleware } from "./express/ExpressValidateMiddleware";
+import { signupSchema } from "./schemas/signupSchema";
+import { loginSchema } from "./schemas/loginSchema";
+import { refreshSchema } from "./schemas/refreshSchema";
+import { forgotSchema } from "./schemas/forgotSchema";
+import { resetSchema } from "./schemas/resetSchema";
+import { profileSchema } from "./schemas/profileSchema";
+import { deleteLoginSchema } from "./schemas/deleteLoginSchema";
 
 export class Router {
     private readonly httpServer: HttpServer;
@@ -37,6 +45,7 @@ export class Router {
                     new SignUpController();
                 return signUpController.handle({ email, password });
             },
+            middlewares: [ExpressValidateMiddleware(signupSchema)],
         });
 
         this.httpServer.on({
@@ -53,6 +62,7 @@ export class Router {
                 const loginController: LoginController = new LoginController();
                 return loginController.handle({ email, password });
             },
+            middlewares: [ExpressValidateMiddleware(loginSchema)],
         });
 
         this.httpServer.on({
@@ -82,6 +92,7 @@ export class Router {
                     new RefreshAccessTokenController();
                 return refreshTokenController.handle({ refreshToken });
             },
+            middlewares: [ExpressValidateMiddleware(refreshSchema)],
         });
 
         this.httpServer.on({
@@ -98,6 +109,7 @@ export class Router {
                     new PasswordRecoveryController();
                 return passwordRecoveryController.handle({ email });
             },
+            middlewares: [ExpressValidateMiddleware(forgotSchema)],
         });
 
         this.httpServer.on({
@@ -119,6 +131,7 @@ export class Router {
                     password: body.password,
                 });
             },
+            middlewares: [ExpressValidateMiddleware(resetSchema)],
         });
 
         this.httpServer.on({
@@ -176,7 +189,10 @@ export class Router {
                     userId: user.id,
                 });
             },
-            middlewares: [ExpressJwtMiddleware],
+            middlewares: [
+                ExpressJwtMiddleware,
+                ExpressValidateMiddleware(profileSchema),
+            ],
         });
 
         this.httpServer.on({
@@ -219,7 +235,10 @@ export class Router {
                     method: body.method,
                 });
             },
-            middlewares: [ExpressJwtMiddleware],
+            middlewares: [
+                ExpressJwtMiddleware,
+                ExpressValidateMiddleware(deleteLoginSchema),
+            ],
         });
     }
 }
