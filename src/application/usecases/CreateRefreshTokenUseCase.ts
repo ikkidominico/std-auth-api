@@ -29,10 +29,12 @@ export class CreateRefreshTokenUseCase {
             });
 
         if (refreshTokenExists) {
-            if (new Date(Date.now()) > refreshTokenExists.expiresIn) {
-                throw new Error("Refresh token expired.");
-            }
-            return refreshTokenExists.id;
+            if (new Date(Date.now()) < refreshTokenExists.expiresIn)
+                return refreshTokenExists.id;
+
+            await this.refreshTokenRepository.deleteRefreshToken({
+                id: refreshTokenExists.id,
+            });
         }
 
         return this.refreshTokenRepository.createRefreshToken({

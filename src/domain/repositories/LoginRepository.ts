@@ -42,4 +42,6 @@ export interface LoginRepository {
         recoveryToken?: string;
         userId: string;
     }): Promise<Login | undefined>;
+
+    deleteLoginById({ id }: { id: string }): Promise<void>;
 }

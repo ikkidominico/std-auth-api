@@ -68,13 +68,13 @@ export class GoogleLoginUseCase {
 
         await this.userRepository.createUser(user);
 
+        await this.profileRepository.createProfile({ userId: user.id, name });
+
         await this.loginRepository.createLogin({
             id: this.idService.getUuid(),
             method: LoginMethods.GOOGLE,
             userId: user.id,
         });
-
-        await this.profileRepository.createProfile({ userId: user.id, name });
 
         return await this.createTokensUseCase.execute({
             userId: user.id,

@@ -193,4 +193,12 @@ export class PrismaLoginRepository implements LoginRepository {
 
         return login;
     }
+
+    async deleteLoginById({ id }: { id: string }): Promise<void> {
+        await prisma.login.delete({
+            where: {
+                id,
+            },
+        });
+    }
 }

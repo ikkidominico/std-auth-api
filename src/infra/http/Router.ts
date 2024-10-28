@@ -1,3 +1,5 @@
+import { LoginMethods } from "@/src/application/enums/LoginMethods";
+import { DeleteLoginController } from "./controllers/DeleteLoginController";
 import { GetLoginsController } from "./controllers/GetLoginsController";
 import { GetProfileController } from "./controllers/GetProfileController";
 import { GoogleOAuthController } from "./controllers/GoogleOAuthController";
@@ -190,6 +192,32 @@ export class Router {
                 const getLoginsController: GetLoginsController =
                     new GetLoginsController();
                 return getLoginsController.handle({ userId: user.id });
+            },
+            middlewares: [ExpressJwtMiddleware],
+        });
+
+        this.httpServer.on({
+            method: HttpMethods.DELETE,
+            url: "/logins",
+            callback: (request) => {
+                const { user } = request as {
+                    user: {
+                        id: string;
+                        email: string;
+                    };
+                };
+                const { body } = request as {
+                    body: {
+                        method: string;
+                    };
+                };
+                const deleteLoginController: DeleteLoginController =
+                    new DeleteLoginController();
+                console.log(body.method as keyof typeof LoginMethods);
+                return deleteLoginController.handle({
+                    userId: user.id,
+                    method: body.method,
+                });
             },
             middlewares: [ExpressJwtMiddleware],
         });

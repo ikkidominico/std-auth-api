@@ -89,4 +89,9 @@ export class InMemoryLoginRepository implements LoginRepository {
         if (recoveryToken) this.logins[index].recoveryToken = recoveryToken;
         return this.logins[index];
     }
+
+    async deleteLoginById({ id }: { id: string }): Promise<void> {
+        const logins = this.logins.filter((login) => login.id !== id);
+        this.logins = logins;
+    }
 }
