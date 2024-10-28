@@ -1,0 +1,270 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Standard Authentication API",
+        "version": "1.0.0",
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/license/mit"
+        }
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3000",
+            "description": "Development server"
+        }
+    ],
+    "components": {
+        "schemas": {
+            "Signup": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                },
+                "required": ["email", "password"]
+            },
+            "Login": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                },
+                "required": ["email", "password"]
+            },
+            "Forgot": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    }
+                },
+                "required": ["email"]
+            },
+            "Reset": {
+                "type": "object",
+                "properties": {
+                    "password": {
+                        "type": "string"
+                    }
+                },
+                "required": ["password"]
+            },
+            "Profile": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "birth": {
+                        "type": "string"
+                    }
+                }
+            },
+            "DeleteLogin": {
+                "type": "object",
+                "properties": {
+                    "method": {
+                        "type": "string",
+                        "enum": ["local", "google"]
+                    }
+                },
+                "required": ["method"]
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        },
+        "responses": {
+            "UnauthorizedError": {
+                "description": "Access token is missing or invalid"
+            }
+        }
+    },
+    "paths": {
+        "/signup": {
+            "post": {
+                "tags": ["Authentication"],
+                "summary": "Create a local login",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Signup"
+                            },
+                            "example": {
+                                "email": "johndoe@email.com",
+                                "password": "password"
+                            }
+                        }
+                    }
+                },
+                "responses": {}
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": ["Authentication"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Login"
+                            },
+                            "example": {
+                                "email": "johndoe@email.com",
+                                "password": "password"
+                            }
+                        }
+                    }
+                },
+                "responses": {}
+            }
+        },
+        "/refresh/{refreshToken}": {
+            "get": {
+                "tags": ["Tokens"],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "refreshToken",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/forgot": {
+            "post": {
+                "tags": ["Recovery"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Forgot"
+                            },
+                            "example": {
+                                "email": "johndoe@email.com"
+                            }
+                        }
+                    }
+                },
+                "responses": {}
+            }
+        },
+        "/reset/{recoveryToken}": {
+            "post": {
+                "tags": ["Tokens"],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "recoveryToken",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Reset"
+                            },
+                            "example": {
+                                "password": "password"
+                            }
+                        }
+                    }
+                },
+                "responses": {}
+            }
+        },
+        "/profile": {
+            "get": {
+                "tags": ["Profile"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {}
+            },
+            "put": {
+                "tags": ["Profile"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Profile"
+                            },
+                            "example": {
+                                "name": "John Doe",
+                                "birth": "2000-01-01"
+                            }
+                        }
+                    }
+                },
+                "responses": {}
+            }
+        },
+        "/logins": {
+            "get": {
+                "tags": ["Login"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "tags": ["Login"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeleteLogin"
+                            },
+                            "example": {
+                                "method": "local"
+                            }
+                        }
+                    }
+                },
+                "responses": {}
+            }
+        }
+    }
+}

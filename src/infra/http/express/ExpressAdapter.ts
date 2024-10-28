@@ -1,4 +1,6 @@
 import express, { Application, NextFunction, Request, Response } from "express";
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "../swagger.json";
 import { HttpServer } from "../HttpServer";
 import { HttpMethods } from "../enums/HttpMethodsEnum";
 
@@ -7,6 +9,14 @@ export class ExpressAdapter implements HttpServer {
 
     constructor() {
         this.server = express();
+        this.server.use(
+            "/docs",
+            swaggerUi.serve,
+            swaggerUi.setup(swaggerDocument, {
+                customSiteTitle: "Documentation",
+                customCss: ".swagger-ui .topbar { display: none }",
+            }),
+        );
         this.server.use(express.json());
     }
 
