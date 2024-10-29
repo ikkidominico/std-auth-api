@@ -1,0 +1,114 @@
+version: "3.9"
+
+x-db-environment-variables: &db-environment-variables
+    POSTGRES_PORT: ${POSTGRES_PORT}
+    POSTGRES_DB: ${POSTGRES_DB}
+    POSTGRES_USER: ${POSTGRES_USER}
+    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+x-smtp-environment-variables: &smtp-environment-variables
+    SMTP_PORT: ${SMTP_PORT}
+
+x-app-environment-variables: &app-environment-variables
+    PORT: ${PORT}
+    JWT_KEY: ${JWT_KEY}
+    DATABASE_URL: ${DATABASE_URL}
+    SMTP_HOST: ${SMTP_HOST}
+    SMTP_PORT: ${SMTP_PORT}
+    SMTP_USER: ${SMTP_USER}
+    SMTP_PASS: ${SMTP_PASS}
+    GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+    GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+    GOOGLE_OAUTH_REDIRECT_URL: ${GOOGLE_OAUTH_REDIRECT_URL}
+    TEST_JWT_KEY: ${TEST_JWT_KEY}
+    TEST_SMTP_HOST: ${TEST_SMTP_HOST}
+    TEST_SMTP_PORT: $TEST_SMTP_PORT{}
+    TEST_SMTP_USER: ${TEST_SMTP_USER}
+    TEST_SMTP_PASS: ${TEST_SMTP_PASS}
+
+networks:
+    std-auth-net:
+        name: std-auth-net
+        driver: bridge
+
+services:
+    std-auth-db:
+        container_name: std-auth-db
+        image: postgres:latest
+        restart: on-failure
+        environment:
+            <<: *db-environment-variables
+        networks:
+            - std-auth-net
+        ports:
+            - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "pg_isready",
+                    "-U",
+                    "${POSTGRES_USER}",
+                    "-d",
+                    "${POSTGRES_DB}",
+                ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    std-auth-smtp:
+        container_name: std-auth-smtp
+        image: rnwood/smtp4dev:latest
+        restart: on-failure
+        environment:
+            <<: *smtp-environment-variables
+        networks:
+            - std-auth-net
+        ports:
+            - "${SMTP_PORT}:25"
+            - "5000:80"
+
+    std-auth-migrate:
+        container_name: std-auth-migrate
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: migrate
+        image: ikkidominico/std-auth-api:migrate
+        environment:
+            <<: *app-environment-variables
+        networks:
+            - std-auth-net
+        depends_on:
+            std-auth-db:
+                condition: service_healthy
+        volumes:
+            - .:/app
+        ports:
+            - "${PORT}:${PORT}"
+
+    std-auth-api:
+        container_name: std-auth-api
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: development
+        image: ikkidominico/std-auth-api:development
+        command: yarn dev
+        restart: unless-stopped
+        environment:
+            <<: *app-environment-variables
+        networks:
+            - std-auth-net
+        depends_on:
+            std-auth-db:
+                condition: service_healthy
+            std-auth-migrate:
+                condition: service_completed_successfully
+        volumes:
+            - .:/app
+        ports:
+            - "${PORT}:${PORT}"
+
+volumes:
+    storage:

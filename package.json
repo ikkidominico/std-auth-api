@@ -8,6 +8,7 @@
     "main": "index.js",
     "scripts": {
         "dev": "node --env-file .env -r ts-node/register -r tsconfig-paths/register --watch src/main.ts",
+        "docker:build:development": "docker build -f Dockerfile --target development -t ikkidominico/std-auth-api-dev:1.0.0 .",
         "format": "eslint --fix && prettier '**/*.ts' --write",
         "test": "vitest",
         "build": "tsc && tsc-alias",
